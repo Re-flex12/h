@@ -458,3 +458,4 @@ canvas.sim { width: 100%; display: block; background: var(--bg2); border: 1px so
 .in input { width: 100%; }
 #supT, #ldT, #tN, #tM, #tSL { overflow-x: auto; }
 .tbl .in { min-width: 0; }
+[hidden]{display:none!important}

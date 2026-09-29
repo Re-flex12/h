@@ -234,7 +234,7 @@ export default [
       const wp = x.v1 * (x.pH - x.pL) / x.ep, h2 = x.h1 + wp, wt = x.et * (x.h3 - x.h4s), qin = x.h3 - h2;
       return { wp, wt, qin, qout: qin - (wt - wp), eta: (wt - wp) / qin, m: x.P / (wt - wp), bwr: wp / wt, _info: ['Defaults: 8 MPa/480 °C turbine inlet, 10 kPa condenser (steam-table values). Look up h and s for your own states in IAPWS-IF97 tables.'] };
     },
-    eq: ['w_p = \\frac{v_1(p_H - p_L)}{\\eta_p}', 'w_t = \\eta_t(h_3 - h_{4s})', 'q_{in} = h_3 - h_2', '\\eta = \\frac{w_t - w_p}{q_{in}}'], assume: ['Steady flow; negligible KE/PE changes; no pressure losses in boiler/condenser.'], limits: ['Enthalpies must come from real steam tables; this tool does not yet compute superheated properties.'], refs: ['Çengel & Boles §10-2; IAPWS-IF97.'],
+    eq: ['w_p = \\frac{v_1(p_H - p_L)}{\\eta_p}', 'w_t = \\eta_t(h_3 - h_{4s})', 'q_{in} = h_3 - h_2', '\\eta = \\frac{w_t - w_p}{q_{in}}'], assume: ['Steady flow; negligible KE/PE changes; no pressure losses in boiler/condenser.'], limits: ['Enthalpies are entered by hand. For a fully computed cycle (including reheat) use the IF97 Rankine calculator.'], related: ['rankine-if97', 'steam-props'], refs: ['Çengel & Boles §10-2; IAPWS-IF97.'],
   },
   {
     id: 'refrigeration', title: 'Vapour-Compression Refrigeration', disc: 'hvac', level: 'uni', tags: ['cop', 'refrigeration', 'heat pump', 'compressor', 'cooling capacity', 'refrigerant', 'tons'],
@@ -310,6 +310,6 @@ export default [
       return { psat: x.p, Tsat: tsatIF97(x.p), _warn: w };
     },
     eq: ['\\beta^2\\vartheta^2 + n_1\\beta^2\\vartheta + n_2\\beta^2 + n_3\\beta\\vartheta^2 + n_4\\beta\\vartheta + n_5\\beta + n_6\\vartheta^2 + n_7\\vartheta + n_8 = 0', '\\beta = (p/p^*)^{1/4},\\; \\vartheta = \\frac{T}{T^*} + \\frac{n_9}{T/T^* - n_{10}}'],
-    assume: ['IAPWS Industrial Formulation 1997, Region 4 (saturation line).'], limits: ['Superheated/compressed properties (h, s, v) are on the roadmap (IF97 Regions 1–3, 5).'], refs: ['IAPWS R7-97(2012) Revised Release on the IAPWS Industrial Formulation 1997.'],
+    assume: ['IAPWS Industrial Formulation 1997, Region 4 (saturation line).'], limits: ['Saturation line only. Full properties of compressed, wet, superheated and supercritical states: see the Steam Tables calculator.'], related: ['steam-props'], refs: ['IAPWS R7-97(2012) Revised Release on the IAPWS Industrial Formulation 1997.'],
   },
 ];

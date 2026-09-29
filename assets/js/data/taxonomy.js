@@ -195,6 +195,7 @@ export const REFERENCE_LIST = [
   ['materials', 'Materials Database', 'Metals, polymers, composites and construction materials with sourced properties.'],
   ['compare', 'Material Comparison', 'Side-by-side properties, specific strength/stiffness and an Ashby-style chart.'],
   ['fluids', 'Fluid & Property Tables', 'Water, air, common liquids, gases and IAPWS-IF97 saturation.'],
+  ['steam', 'Steam Tables (IAPWS-IF97)', 'Saturated, superheated, compressed and supercritical water with T–s, Mollier and p–h charts.'],
   ['tables', 'Engineering Tables', 'ISO metric threads, bolt classes, NPS pipe sizes, roughness, K-factors.'],
   ['standards', 'Standards Guide', 'What ISO, ASME, ASTM, IEC, EN and others cover — and which calculators relate.'],
   ['api', 'JavaScript API', 'Call any calculator, solver, equation or unit conversion from code via window.PHYSENG.'],

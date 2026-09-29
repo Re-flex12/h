@@ -56,4 +56,15 @@ export const VALIDATION = {
   blackbody: [{ inputs: { T: 5772 }, expect: { lmax: [502e-9, 0.002] }, source: 'Wien: λ_max(Sun, 5772 K) ≈ 502 nm' }],
   'pipe-flow': [{ inputs: { rho: 1000, mu: 1e-3, Q: Math.PI / 4 * 0.1 ** 2 * 1, D: 0.1, eps: 1e-5, L: 1, K: 0, dz: 0 }, expect: { Re: [1e5, 1e-9], f: [0.01852, 0.005] }, source: 'Moody chart / Colebrook: Re = 10⁵, ε/D = 10⁻⁴ → f ≈ 0.0185' }],
   reynolds: [{ inputs: { rho: 998.2, mu: 1.002e-3, v: 2, D: 0.025 }, expect: { Re: [998.2 * 2 * 0.025 / 1.002e-3, 1e-12] }, source: 'Definition' }],
+  'steam-props': [
+    { inputs: { mode: 'pT', p: 3e6, T: 300 }, expect: { v: [0.100215168e-2, 1e-8], hout: [115.331273e3, 1e-8], sout: [0.392294792e3, 1e-8], cp: [4.17301218e3, 1e-8], w: [1507.73921, 1e-8] }, source: 'IAPWS-IF97 Table 5, Region 1 (300 K, 3 MPa)' },
+    { inputs: { mode: 'pT', p: 30e6, T: 700 }, expect: { v: [0.542946619e-2, 1e-8], hout: [2631.49474e3, 1e-8], sout: [5.17540298e3, 1e-8] }, source: 'IAPWS-IF97 Table 15, Region 2 (700 K, 30 MPa)' },
+    { inputs: { mode: 'pT', p: 25.5837018e6, T: 650 }, expect: { rho: [500, 1e-7], hout: [1863.43019e3, 1e-7], sout: [4.05427273e3, 1e-7] }, source: 'IAPWS-IF97 Table 33, Region 3 (650 K, ρ = 500 kg/m³)' },
+    { inputs: { mode: 'pT', p: 30e6, T: 2000 }, expect: { v: [0.0311385219, 1e-8], hout: [6571.22604e3, 1e-8], sout: [8.53640523e3, 1e-8] }, source: 'IAPWS-IF97 Table 42, Region 5 (2000 K, 30 MPa)' },
+  ],
+  'rankine-if97': [
+    { inputs: { pH: 15e6, T3: 873.15, pL: 10e3 }, expect: { eta: [0.430, 3e-3], x4: [0.804, 3e-3] }, source: 'Çengel & Boles Ex. 10-3c: 15 MPa/600 °C, 10 kPa → η = 43.0 %, x₄ = 0.804' },
+    { inputs: { pH: 15e6, T3: 873.15, pL: 10e3, rh: 'yes', pR: 4e6, TR: 873.15 }, expect: { eta: [0.450, 3e-3], x4: [0.896, 3e-3] }, source: 'Çengel & Boles Ex. 10-4: reheat at 4 MPa/600 °C → η = 45.0 %, x₆ = 0.896' },
+    { inputs: { pH: 3e6, T3: 623.15, pL: 75e3 }, expect: { eta: [0.260, 3e-3] }, source: 'Çengel & Boles Ex. 10-3a: 3 MPa/350 °C, 75 kPa → η = 26.0 %' },
+  ],
 };

@@ -2,6 +2,7 @@ import { EQUATIONS, EQ } from '../data/equations.js';
 import { CONSTANTS } from '../data/constants.js';
 import { MATERIALS, PROPS, DERIVED, getMaterial } from '../data/materials.js';
 import { WATER_TABLE, AIR_TABLE, FLUIDS, GASES, ROUGHNESS, psatIF97 } from '../data/fluids.js';
+import { steamPT, satP, satT, dome, steamPS } from '../data/if97.js';
 import { THREADS, BOLT_CLASSES, PIPES, KFACTORS, STANDARDS } from '../data/reference.js';
 import { CALC, CALCS, DISCIPLINES } from '../calcs/index.js';
 import { LESSON } from '../data/lessons.js';
@@ -206,9 +207,60 @@ export function fluids(main) {
       <div><div class="sec-head" style="margin-top:0"><h2>Gases (ideal-gas data, ~300 K)</h2></div><div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Gas</th><th class="num">M g/mol</th><th class="num">R J/(kg·K)</th><th class="num">c_p J/(kg·K)</th><th class="num">γ</th></tr></thead><tbody>${GASES.map(g => `<tr><td>${esc(g.name)}</td><td class="num">${g.M}</td><td class="num">${g.R}</td><td class="num">${g.cp}</td><td class="num">${g.gamma}</td></tr>`).join('')}</tbody></table></div></div>
     </div>
     <div class="split mt2">
-      <div><div class="sec-head" style="margin-top:0"><h2>Water/steam saturation — IAPWS-IF97</h2><a class="btn ghost sm" href="#/calc/steam-sat">Calculator →</a></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th class="num">T °C</th><th class="num">p_sat kPa</th><th class="num">p_sat bar</th></tr></thead><tbody>${sat.map(([t, p]) => `<tr><td class="num">${t < 1 ? '0.01' : t.toFixed(0)}</td><td class="num">${fmt(p / 1e3, 6)}</td><td class="num">${fmt(p / 1e5, 5)}</td></tr>`).join('')}</tbody></table></div><p class="small muted">Computed live from the IF97 Region 4 equation (IAPWS R7-97).</p></div>
+      <div><div class="sec-head" style="margin-top:0"><h2>Water/steam saturation — IAPWS-IF97</h2><a class="btn ghost sm" href="#/reference/steam">Full steam tables →</a></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th class="num">T °C</th><th class="num">p_sat kPa</th><th class="num">p_sat bar</th></tr></thead><tbody>${sat.map(([t, p]) => `<tr><td class="num">${t < 1 ? '0.01' : t.toFixed(0)}</td><td class="num">${fmt(p / 1e3, 6)}</td><td class="num">${fmt(p / 1e5, 5)}</td></tr>`).join('')}</tbody></table></div><p class="small muted">Computed live from the IF97 Region 4 equation (IAPWS R7-97).</p></div>
       <div><div class="sec-head" style="margin-top:0"><h2>Pipe roughness</h2></div><div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Material</th><th class="num">ε mm</th></tr></thead><tbody>${ROUGHNESS.map(r => `<tr><td>${esc(r.name)}</td><td class="num">${r.eps}</td></tr>`).join('')}</tbody></table></div><p class="small muted">Typical new-pipe values (Moody 1944; Crane TP-410). Aged pipe can be several times rougher.</p></div>
     </div>`;
+}
+
+// ── Steam tables (IAPWS-IF97) ───────────────────────────────────
+export function steam(main) {
+  const P_MPa = [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.101325, 0.2, 0.5, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20, 22];
+  const satRows = P_MPa.map(p => { const s = satP(p * 1e6); return [p, s.T - 273.15, s.liq.v, s.vap.v, s.liq.h / 1e3, s.hfg / 1e3, s.vap.h / 1e3, s.liq.s / 1e3, s.vap.s / 1e3]; });
+  const f = (v, d = 5) => fmt(v, d);
+  const head = (h) => `<thead><tr>${h.map(x => `<th class="num">${x}</th>`).join('')}</tr></thead>`;
+  main.innerHTML = `${crumbs([['Reference', '#/reference'], ['Steam tables']])}${pageHead('07 / REF / STM', 'Steam Tables — IAPWS-IF97', 'Saturated, superheated, compressed and supercritical water computed live from the IAPWS Industrial Formulation 1997 (Regions 1–5). Every value on this page is calculated in your browser; the implementation is checked against the IAPWS verification tables in the test suite.')}
+    <div class="row gap" style="flex-wrap:wrap"><a class="btn sm" href="#/calc/steam-props">Any state calculator →</a><a class="btn ghost sm" href="#/calc/rankine-if97">Rankine cycle →</a><a class="btn ghost sm" href="#/calc/steam-turbine">Turbine expansion →</a><a class="btn ghost sm" href="#/calc/steam-sat">Saturation only →</a></div>
+    <div class="sec-head"><h2>Saturated water — pressure table</h2></div>
+    <div class="tbl-wrap" style="max-height:none"><table class="tbl">${head(['p MPa', 'T_sat °C', 'v_f m³/kg', 'v_g m³/kg', 'h_f kJ/kg', 'h_fg kJ/kg', 'h_g kJ/kg', 's_f kJ/kg·K', 's_g kJ/kg·K'])}<tbody>${satRows.map(r => `<tr>${r.map((v, i) => `<td class="num">${i === 0 ? v : f(v, i === 2 ? 5 : 6)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="sec-head"><h2>Superheated &amp; compressed — at pressure</h2>
+      <div class="row gap"><label class="small muted" for="stp">p (MPa)</label><select class="plain" id="stp">${[0.01, 0.1, 0.2, 0.5, 1, 2, 4, 6, 8, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100].map(p => `<option${p === 1 ? ' selected' : ''}>${p}</option>`).join('')}</select></div></div>
+    <div id="stSup"></div>
+    <div class="sec-head"><h2>Charts</h2><div class="row gap"><select class="plain" id="stChart"><option value="Ts">T–s diagram</option><option value="hs">h–s (Mollier) diagram</option><option value="ph">p–h diagram</option></select></div></div>
+    <div id="stPlot"></div>
+    <p class="small muted">Reference state: u = s = 0 for saturated liquid at the triple point (0.01 °C). Region 3 densities are solved numerically on the stable branch; states closer than ~0.1 K to the critical point are less accurate (IF97 limitation). Source: IAPWS R7-97(2012).</p>`;
+  const sup = () => {
+    const p = parseFloat(main.querySelector('#stp').value) * 1e6;
+    const Ts = [0.01, 20, 50, 80, 100, 120, 150, 180, 200, 250, 300, 350, 375, 400, 450, 500, 550, 600, 650, 700, 800, 900, 1000, 1200, 1500, 2000];
+    const tsat = p < 22.064e6 ? satP(p).T - 273.15 : null;
+    const rows = Ts.map(t => [t, steamPT(p, t + 273.15)]).filter(([, s]) => s);
+    main.querySelector('#stSup').innerHTML = `<p class="small muted">${tsat != null ? `T_sat = ${f(tsat, 6)} °C at this pressure. Rows below T_sat are compressed liquid (marked L).` : 'Supercritical pressure — no phase change.'}</p><div class="tbl-wrap" style="max-height:none"><table class="tbl">${head(['T °C', 'phase', 'v m³/kg', 'ρ kg/m³', 'u kJ/kg', 'h kJ/kg', 's kJ/kg·K', 'c_p kJ/kg·K', 'w m/s'])}<tbody>${rows.map(([t, s]) => `<tr><td class="num">${t}</td><td class="num">${s.region === 1 || (s.region === 3 && tsat != null && t < tsat) ? 'L' : s.region === 3 ? 'SC' : 'V'}</td><td class="num">${f(s.v)}</td><td class="num">${f(s.rho)}</td><td class="num">${f(s.u / 1e3, 6)}</td><td class="num">${f(s.h / 1e3, 6)}</td><td class="num">${f(s.s / 1e3, 5)}</td><td class="num">${f(s.cp / 1e3, 4)}</td><td class="num">${f(s.w, 4)}</td></tr>`).join('')}</tbody></table></div>`;
+  };
+  const chart = () => {
+    const kind = main.querySelector('#stChart').value, d = dome(80);
+    const X = st => kind === 'ph' ? st.h / 1e3 : st.s / 1e3, Y = st => kind === 'Ts' ? st.T - 273.15 : kind === 'hs' ? st.h / 1e3 : st.p / 1e6;
+    const dx = kind === 'ph' ? [...d.map(q => q.hf / 1e3), ...d.slice().reverse().map(q => q.hg / 1e3)] : [...d.map(q => q.sf / 1e3), ...d.slice().reverse().map(q => q.sg / 1e3)];
+    const dy = kind === 'Ts' ? [...d.map(q => q.T - 273.15), ...d.slice().reverse().map(q => q.T - 273.15)] : kind === 'hs' ? [...d.map(q => q.hf / 1e3), ...d.slice().reverse().map(q => q.hg / 1e3)] : [...d.map(q => q.p / 1e6), ...d.slice().reverse().map(q => q.p / 1e6)];
+    const series = [{ x: dx, y: dy, label: 'Saturation dome', color: 'var(--ink)', width: 2 }];
+    [0.01, 0.1, 1, 5, 10, 22.064, 40].forEach((pM, k) => {
+      const xs = [], ys = [];
+      for (let T = 275; T <= 1073; T += 4) {
+        const p = pM * 1e6;
+        if (p < 22.064e6) { const ts = satP(p).T; if (T > ts - 4 && T < ts + 4 && T <= ts) { const sat = satP(p); [sat.liq, sat.vap].forEach(q => { xs.push(X(q)); ys.push(Y({ ...q, T: sat.T, p })); }); continue; } }
+        const st = steamPT(p, T); if (st) { xs.push(X(st)); ys.push(Y(st)); }
+      }
+      if (kind !== 'ph') series.push({ x: xs, y: ys, label: `${pM} MPa`, color: COLORS[(k + 1) % COLORS.length], width: 1.2 });
+    });
+    if (kind === 'ph') [100, 200, 300, 400, 500, 600, 800].forEach((t, k) => {
+      const xs = [], ys = [];
+      for (let lp = -2; lp <= 2; lp += 0.02) { const st = steamPT(10 ** lp * 1e6, t + 273.15); if (st) { xs.push(st.h / 1e3); ys.push(10 ** lp); } }
+      series.push({ x: xs, y: ys, label: `${t} °C`, color: COLORS[(k + 1) % COLORS.length], width: 1.2 });
+    });
+    if (kind !== 'Ts') [0.8, 0.9].forEach(xq => { const xs = [], ys = []; d.forEach(q => { const s = q.sf + xq * (q.sg - q.sf), h = q.hf + xq * (q.hg - q.hf); xs.push(kind === 'ph' ? h / 1e3 : s / 1e3); ys.push(kind === 'hs' ? h / 1e3 : q.p / 1e6); }); series.push({ x: xs, y: ys, label: `x = ${xq}`, color: 'var(--ink3)', dash: '3 3', width: 1 }); });
+    const opts = kind === 'Ts' ? { xlabel: 's (kJ/kg·K)', ylabel: 'T (°C)', ymin: 0, ymax: 800, xmin: 0, xmax: 10 } : kind === 'hs' ? { xlabel: 's (kJ/kg·K)', ylabel: 'h (kJ/kg)', xmin: 0, xmax: 10, ymin: 0, ymax: 4200 } : { xlabel: 'h (kJ/kg)', ylabel: 'p (MPa)', logy: true, xmin: 0, xmax: 4000 };
+    main.querySelector('#stPlot').innerHTML = plotSVG(series, { ...opts, h: 420 }) + legend(series);
+  };
+  main.querySelector('#stp').onchange = sup; main.querySelector('#stChart').onchange = chart;
+  sup(); chart();
 }
 
 export function tables(main) {
