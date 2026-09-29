@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHYSENG — Physics &amp; Engineering Toolkit</title>
+<meta name="description" content="Learn, calculate, simulate and reference physics and engineering. Calculators with stated equations, assumptions, units and sources — from school physics to professional engineering.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0c0f'/%3E%3Cpath d='M4 22h24' stroke='%23c8f53c' stroke-width='3'/%3E%3Cpath d='M16 4v13m-5-5 5 5 5-5' stroke='%23c8f53c' stroke-width='3' fill='none'/%3E%3Cpath d='M6 22l-3 6h6zM26 22a3 3 0 1 0 .01 0' fill='%23c8f53c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<link rel="stylesheet" href="assets/css/main.css">
+<script>
+  // Apply saved theme before first paint to avoid a flash.
+  try { var t = JSON.parse(localStorage.getItem('physeng.settings') || '{}').theme; if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="top-row">
+    <a class="brand" href="#/" aria-label="PHYSENG home">
+      <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M2 17h36" /><path d="M20 1v11m-4.5-4.5L20 12l4.5-4.5" /><path class="fill" d="M6 17l-4 6h8zM34 20.5a3 3 0 1 0 .01 0" /></svg>
+      <span>PHYS<b>ENG</b></span>
+    </a>
+    <button class="search-trigger" id="searchTrigger" aria-label="Search">
+      <span class="st-ico">⌕</span><span class="st-txt">Search equations, calculators, materials, topics…</span><kbd>/</kbd>
+    </button>
+    <div class="top-ctl">
+      <label class="ctl" title="Depth of content and default calculator mode">
+        <span>Level</span>
+        <select id="levelSel">
+          <option value="school">School</option>
+          <option value="uni">University</option>
+          <option value="pro">Professional</option>
+        </select>
+      </label>
+      <label class="ctl" title="Default unit system">
+        <span>Units</span>
+        <select id="unitSel">
+          <option value="si">SI</option>
+          <option value="metric">Metric eng.</option>
+          <option value="imperial">Imperial</option>
+        </select>
+      </label>
+      <button class="ctl-btn" id="themeBtn" aria-label="Toggle light/dark theme" title="Toggle theme">◐</button>
+      <button class="ctl-btn menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">≡</button>
+    </div>
+  </div>
+  <nav class="nav" id="nav" aria-label="Primary">
+    <a href="#/learn" data-sec="learn"><i>01</i>Learn</a>
+    <a href="#/physics" data-sec="physics"><i>02</i>Physics</a>
+    <a href="#/quantum" data-sec="quantum" class="qr"><i>03</i>Quantum &amp; Relativity</a>
+    <a href="#/engineering" data-sec="engineering"><i>04</i>Engineering</a>
+    <a href="#/maths" data-sec="maths"><i>05</i>Mathematics</a>
+    <a href="#/tools" data-sec="tools"><i>06</i>Tools</a>
+    <a href="#/reference" data-sec="reference"><i>07</i>Reference</a>
+    <a href="#/workspace" data-sec="workspace"><i>08</i>Workspace</a>
+  </nav>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer class="foot">
+  <div>
+    <b>PHYSENG</b> — one place to learn, calculate, simulate and reference physics &amp; engineering.
+  </div>
+  <div class="foot-note">
+    Calculations are provided for education and preliminary design. They are not certified engineering analysis.
+    Every calculator states its equations, assumptions, limitations and data sources — check them, and verify
+    safety-critical work against the governing standard and a qualified engineer.
+  </div>
+  <div class="foot-links"><a href="#/content-map">Full content map</a> · <a href="#/about">Method &amp; reliability</a> · <a href="#/reference/standards">Standards guide</a></div>
+</footer>
+
+<div class="palette" id="palette" hidden>
+  <div class="pal-box" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="pal-in"><span>⌕</span><input id="palInput" type="search" autocomplete="off" spellcheck="false" placeholder="Try: reynolds · buckling · 6061 · E=mc2 · FL^3/48EI · black hole"><kbd>esc</kbd></div>
+    <div class="pal-res" id="palRes"></div>
+  </div>
+</div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
