@@ -230,3 +230,26 @@ export function standards(main) {
       <p class="muted">${esc(s.scope)}</p>
       <div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Standard</th><th>Scope</th><th>Related calculator</th></tr></thead><tbody>${s.items.map(([n, d, c]) => `<tr><td><b>${esc(n)}</b></td><td>${esc(d)}</td><td>${c ? `<a href="#/calc/${c}">${esc(CALC[c]?.title || c)}</a>` : '<span class="muted">—</span>'}</td></tr>`).join('')}</tbody></table></div>`).join('')}`;
 }
+
+// ── JavaScript API docs ─────────────────────────────────────────
+export function api(main) {
+  const ex = (code) => `<pre class="eqblock mono" style="white-space:pre-wrap;font-size:13px">${esc(code)}</pre>`;
+  main.innerHTML = `${crumbs([['Reference', '#/reference'], ['JavaScript API']])}${pageHead('07 / REF / API', 'JavaScript API', 'Every calculator, equation, unit conversion, material and solver is available programmatically as <code>window.PHYSENG</code> — in the site and in the single-file build. All values are coherent SI.')}
+    <div class="split"><div class="panel tick"><h4>Run a calculator</h4>${ex(`PHYSENG.run('reynolds', { v: 2, D: 0.025, fluid: 'water20' })
+// → { outputs: { Re: 49800, reg: 'Turbulent', nu: 1.0e-6 }, warnings: [...], checks: [...] }
+
+PHYSENG.run('shaft-torsion', { T: 450, d: 0.035, mat: 'st-4140-ann' }).outputs.tau
+// → 53454000 (Pa)`)}
+      <h4 class="mt">Inspect inputs</h4>${ex(`PHYSENG.calculators().find(c => c.id === 'pipe-flow').inputs
+PHYSENG.defaults('pipe-flow')`)}</div>
+    <div class="panel"><h4>Equations & units</h4>${ex(`PHYSENG.solve('ohm', { V: 12, R: 100 }, 'I')      // → 0.12
+PHYSENG.solve('schwarzschild', { M: 1.98847e30 }, 'rs')  // → 2953.3
+PHYSENG.convert(1, 'pressure', 'psi', 'kPa')            // → 6.894757
+PHYSENG.dimensions().torque                              // → ['N·m', 'kN·m', …]`)}
+      <h4 class="mt">Materials, constants, solvers</h4>${ex(`PHYSENG.material('al-6061-t6').E        // → 6.89e10 (Pa)
+PHYSENG.constants.h                      // → 6.62607015e-34
+PHYSENG.solvers.beam({ L: 4, E: 210e9, I: 8.36e-6,
+  supports: [{ x: 0, type: 'pin' }, { x: 4, type: 'roller' }],
+  loads: [{ type: 'point', x: 2, P: 10e3 }] }).maxM   // → { x: 2, v: 10000 }`)}</div></div>
+    <div class="panel mt"><h4>Try it</h4><p class="small muted">Open your browser's developer console on this page and type <code>PHYSENG</code>. Calculator ids: <a href="#/calculators">calculator library</a> (last URL segment). API version ${esc(window.PHYSENG?.version || '1.0')}.</p></div>`;
+}

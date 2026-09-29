@@ -51,6 +51,7 @@ export function home(main) {
       <h1 style="margin-top:12px">Learn it.<br>Calculate it.<br><em>Simulate</em> it.<br>Apply it.</h1>
       <p class="lede">One platform that grows with you: from A-level moments, through a degree’s beam theory, to a professional calculation sheet with equations, assumptions, units and sources.</p>
       <div class="hero-search" onclick="physengSearch()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')physengSearch()"><span>⌕</span><div>Search: reynolds · 4140 · FL³/48EI · three-phase · black hole</div></div>
+      <p class="small mt"><a href="#/tools/ask">Or ask a question in plain English →</a> <span class="muted">e.g. “water in a 25 mm pipe at 2 m/s — turbulent?”</span></p>
       <div class="pipeline">
         <a href="#/learn"><span class="n">01 / LEARN</span><span class="w">Learn</span><span class="s">Theory at three depths</span></a>
         <a href="#/calculators"><span class="n">02 / CALCULATE</span><span class="w">Calculate</span><span class="s">${CALCS.length} calculators</span></a>
@@ -103,9 +104,9 @@ export function quantum(main) {
   const calcs = CALCS.filter(c => DISCIPLINES[c.disc]?.section === 'quantum');
   main.innerHTML = `${crumbs([['Quantum & Relativity']])}${pageHead('03 / Q&R — SEPARATE SECTION', 'Quantum & Relativity', 'Explore physics beyond the classical world. Quantum Mechanics · Special Relativity · General Relativity · Atomic Physics · Particle Physics · Quantum Field Theory.', true)}
     <div class="toc">${QUANTUM.areas.map(a => `<a class="chip" href="#/quantum#a-${a.id}">${esc(a.name)}</a>`).join('')}</div>
-    <div class="grid g3">${['wavefunction', 'minkowski', 'bh-orbit'].map(id => linkTile(`#/sims/${id}`, 'Simulation', SIMS[id].title, SIMS[id].d, 'Run →', 'qr')).join('')}</div>
+    <div class="grid g4">${linkTile('#/quantum/circuit', 'Quantum information', 'Quantum Circuit Simulator', 'Up to 5 qubits: gates, entanglement, Bloch vectors, Grover and Deutsch–Jozsa.', 'Build →', 'qr')}${['wavefunction', 'minkowski', 'bh-orbit'].map(id => linkTile(`#/sims/${id}`, 'Simulation', SIMS[id].title, SIMS[id].d, 'Run →', 'qr')).join('')}</div>
     <div class="sec-head"><div><span class="code" style="color:var(--qr)">Q&amp;R CALCULATOR LIBRARY</span><h2>Calculators</h2></div></div>
-    ${['Quantum foundations', 'Wave–particle duality', 'Quantum mechanics', 'Quantum systems', 'Atomic physics', 'Special relativity', 'General relativity', 'Black holes', 'Gravitational waves', 'Cosmology'].map(sub => {
+    ${['Quantum foundations', 'Wave–particle duality', 'Quantum mechanics', 'Quantum systems', 'Atomic physics', 'Quantum information', 'Special relativity', 'General relativity', 'Black holes', 'Gravitational waves', 'Cosmology', 'Particle physics'].map(sub => {
       const cs = calcs.filter(c => c.sub === sub);
       return cs.length ? `<h4 style="margin:18px 0 8px">${esc(sub)}</h4><div class="grid auto">${cs.map(calcTile).join('')}</div>` : '';
     }).join('')}
@@ -123,16 +124,19 @@ export function engineering(main) {
 
 export function discipline(main, [id]) {
   const d = ENGINEERING.disciplines.find(x => x.id === id);
+  const extraTools = { hvac: [['#/tools/psychro', 'Tool', 'Interactive Psychrometric Chart', 'Place states, see RH/enthalpy lines and process loads.']], signals: [['#/tools/fft', 'Tool', 'Signal Analysis (FFT)', 'Spectra, windows, peaks and THD.']], fluids: [['#/solvers/pipe-network', 'Solver', 'Pipe Network Solver', 'Loops, reservoirs, demands and pumps.']], thermo: [['#/solvers/cycle', 'Solver', 'Thermodynamic Cycle Solver', 'P–v and T–s diagrams for gas cycles.']], electrical: [['#/solvers/circuit', 'Solver', 'Circuit Solver', 'DC/AC nodal analysis and frequency sweeps.']], vibrations: [['#/solvers/vibration', 'Solver', 'MDOF Vibration Solver', 'Modes and frequency response.']], mechanical: [['#/solvers/gear', 'Solver', 'Drive Train Solver', 'Motor → gears → load.']], structural: [['#/solvers/beam', 'Solver', 'Beam Solver', 'Reactions, SFD, BMD, deflection.'], ['#/solvers/truss', 'Solver', 'Truss Solver', 'Member forces by direct stiffness.']], controls: [['#/calc/pid', 'Solver', 'PID Simulator', 'Closed-loop response.'], ['#/calc/bode', 'Solver', 'Bode / Nyquist', 'Margins and stability.']], computational: [['#/tools/numerics', 'Tool', 'Numerical Methods Lab', 'Algorithms step by step.'], ['#/tools/matrix', 'Tool', 'Matrix Tool', 'Linear algebra.']], experimental: [['#/tools/data', 'Tool', 'Data Analysis', 'CSV statistics and regression.'], ['#/tools/uncertainty', 'Tool', 'Uncertainty', 'GUM + Monte Carlo.']] }[id] || [];
   if (!d) { main.innerHTML = '<p>Unknown discipline.</p>'; return; }
   const calcs = CALCS.filter(c => d.calc.includes(c.disc));
   main.innerHTML = `${crumbs([['Engineering', '#/engineering'], [d.name]])}${pageHead(`ENG / ${d.code}`, d.name, '')}
+    ${extraTools.length ? `<div class="grid auto mb">${extraTools.map(t => linkTile(...t, 'Open →')).join('')}</div>` : ''}
     ${calcs.length ? `<div class="sec-head"><h2>Calculators</h2><span class="muted small">${calcs.length}</span></div><div class="grid auto">${calcs.map(calcTile).join('')}</div>` : `<div class="msg info">No dedicated calculators yet for ${esc(d.name)} — the topic map below shows what is planned and what already links to live tools elsewhere on the site.</div>`}
     <div class="sec-head"><h2>Topic map</h2></div>${taxGroups(d.groups)}`;
 }
 
 export function maths(main) {
   main.innerHTML = `${crumbs([['Mathematics']])}${pageHead('05 / MTH', 'Mathematics', esc(MATHS.blurb))}
-    <div class="grid g4">${[['solver', 'Equation Solver', 'Solve any equation for any variable.'], ['graph', 'Graphing', 'Functions, data, log axes, regression.'], ['data', 'Data Analysis', 'Statistics and least squares.'], ['uncertainty', 'Uncertainty', 'Error propagation, Monte Carlo.']].map(([id, t, dd]) => linkTile(toolHref(id), 'Tool', t, dd, 'Open →')).join('')}</div>
+    <div class="grid g4">${[['solver', 'Equation Solver', 'Solve any equation for any variable.'], ['matrix', 'Matrix Tool', 'Determinants, inverses, eigenvalues, Ax = b.'], ['numerics', 'Numerical Methods Lab', 'Roots, integration, differentiation, ODEs.'], ['graph', 'Graphing', 'Functions, data, log axes, regression.'], ['data', 'Data Analysis', 'Statistics and least squares.'], ['uncertainty', 'Uncertainty', 'Error propagation, Monte Carlo.'], ['fft', 'Signal Analysis', 'FFT spectra, windows, THD.'], ['dimensions', 'Dimensional Analysis', 'Check any equation.']].map(([id, t, dd]) => linkTile(toolHref(id), 'Tool', t, dd, 'Open →')).join('')}</div>
+    <div class="sec-head"><h2>Calculators</h2></div><div class="grid auto">${CALCS.filter(c => c.disc === 'maths').map(calcTile).join('')}</div>
     <div class="sec-head"><h2>Topic map</h2></div>${taxGroups(MATHS.groups)}`;
 }
 

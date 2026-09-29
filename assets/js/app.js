@@ -11,12 +11,16 @@ import * as solvers2 from './pages/solvers2.js';
 import * as sims from './pages/sims.js';
 import * as learn from './pages/learn.js';
 import * as ws from './pages/workspace.js';
+import * as tools2 from './pages/tools2.js';
+import * as practice from './pages/practice.js';
+import { PHYSENG } from './api.js';
+window.PHYSENG = PHYSENG;
 
 const ROUTES = [
   [/^$/, sections.home, ''],
-  [/^learn$/, learn.index, 'learn'], [/^learn\/([\w-]+)$/, learn.lesson, 'learn'],
+  [/^learn$/, learn.index, 'learn'], [/^learn\/practice$/, practice.page, 'learn'], [/^learn\/([\w-]+)$/, learn.lesson, 'learn'],
   [/^physics$/, sections.physics, 'physics'],
-  [/^quantum$/, sections.quantum, 'quantum'],
+  [/^quantum$/, sections.quantum, 'quantum'], [/^quantum\/circuit$/, tools2.quantumCircuit, 'quantum'],
   [/^engineering$/, sections.engineering, 'engineering'], [/^engineering\/([\w-]+)$/, sections.discipline, 'engineering'],
   [/^maths$/, sections.maths, 'maths'],
   [/^tools$/, sections.tools, 'tools'],
@@ -24,11 +28,11 @@ const ROUTES = [
   [/^solvers$/, solvers.index, 'tools'], [/^solvers\/beam$/, solvers.beam, 'tools'], [/^solvers\/truss$/, solvers.truss, 'tools'], [/^solvers\/circuit$/, solvers2.circuit, 'tools'], [/^solvers\/pipe-network$/, solvers2.pipes, 'tools'], [/^solvers\/cycle$/, solvers2.cycle, 'tools'], [/^solvers\/vibration$/, solvers2.vibration, 'tools'], [/^solvers\/gear$/, solvers2.gear, 'tools'], [/^solvers\/([\w-]+)$/, solvers.planned, 'tools'],
   [/^sims$/, sims.index, 'tools'], [/^sims\/([\w-]+)$/, sims.page, 'tools'],
   [/^tools\/units$/, tools.units, 'tools'], [/^tools\/solver$/, tools.solver, 'tools'], [/^tools\/graph$/, tools.graph, 'tools'],
-  [/^tools\/data$/, tools.data, 'tools'], [/^tools\/uncertainty$/, tools.uncertainty, 'tools'], [/^tools\/dimensions$/, tools.dimensions, 'tools'],
+  [/^tools\/data$/, tools.data, 'tools'], [/^tools\/uncertainty$/, tools.uncertainty, 'tools'], [/^tools\/dimensions$/, tools.dimensions, 'tools'], [/^tools\/ask$/, tools2.ask, 'tools'], [/^tools\/fft$/, tools2.fftTool, 'tools'], [/^tools\/matrix$/, tools2.matrix, 'maths'], [/^tools\/numerics$/, tools2.numerics, 'maths'], [/^tools\/psychro$/, tools2.psychroChart, 'engineering'],
   [/^reference$/, sections.reference, 'reference'],
   [/^reference\/equations$/, ref.equations, 'reference'], [/^reference\/equations\/([\w-]+)$/, ref.equation, 'reference'],
   [/^reference\/constants$/, ref.constants, 'reference'], [/^reference\/materials$/, ref.materials, 'reference'], [/^reference\/materials\/([\w-]+)$/, ref.material, 'reference'],
-  [/^reference\/compare$/, ref.compare, 'reference'], [/^reference\/fluids$/, ref.fluids, 'reference'], [/^reference\/tables$/, ref.tables, 'reference'], [/^reference\/standards$/, ref.standards, 'reference'],
+  [/^reference\/compare$/, ref.compare, 'reference'], [/^reference\/fluids$/, ref.fluids, 'reference'], [/^reference\/tables$/, ref.tables, 'reference'], [/^reference\/standards$/, ref.standards, 'reference'], [/^reference\/api$/, ref.api, 'reference'],
   [/^workspace$/, ws.page, 'workspace'], [/^report$/, calc.report, 'workspace'],
   [/^content-map$/, sections.contentMap, ''], [/^about$/, sections.about, ''],
 ];

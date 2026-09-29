@@ -24,6 +24,7 @@ export function index(main) {
       const done = l.questions.filter((_, i) => prog[`${l.id}:${i}`]).length;
       return `<a class="tile${k === 'quantum' ? ' qr' : ''}" href="#/learn/${l.id}"><span class="k"><span>${esc(l.topic)}</span><span>${l.levels.map(levelBadge).join(' ')}</span></span><span class="t">${esc(l.title)}</span><span class="d">${esc(l.intro)}</span><span class="go">${done}/${l.questions.length} questions · Learn →</span></a>`;
     }).join('')}</div>`).join('')}
+    <div class="sec-head"><h2>Practice</h2></div><div class="grid g4">${[['bank', 'Question bank', 'Every lesson question with hints and worked solutions.'], ['drill', 'Formula drills', 'Unlimited numeric questions generated from the equation library.'], ['quiz', 'Timed quiz', 'Mixed questions against the clock, marked instantly.'], ['flash', 'Flashcards', 'Spaced-repetition equation cards.']].map(([t, n, d]) => linkTile(`#/learn/practice?t=${t}`, 'Practice', n, d, 'Start →')).join('')}</div>
     <div class="msg info mt2">Levels map to curricula: <b>School</b> (GCSE/IGCSE, A-Level/IAL, IB), <b>University</b> (Year 1–2+), <b>Professional</b> (design practice). Exam-board-specific question sets are on the roadmap.</div>`;
 }
 

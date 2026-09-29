@@ -30,7 +30,7 @@ export const QUANTUM = {
       g('Atomic Physics', 'Rutherford model|Bohr model>calc:hydrogen|Hydrogen atom>calc:hydrogen|Bohr radius>tool:constants|Atomic spectra>calc:hydrogen|Rydberg formula>eq:rydberg|Schrödinger hydrogen atom|Principal/orbital/magnetic/spin quantum numbers|Atomic orbitals|s, p, d, f orbitals|Pauli exclusion principle|Electron configurations|Hund\'s rule|Screening|Selection rules|Fine structure|Zeeman effect>calc:zeeman|Stark effect'),
       g('Quantum Statistics', 'Identical particles|Bosons|Fermions|Fermi–Dirac statistics>calc:fermi|Bose–Einstein statistics>calc:bec|Maxwell–Boltzmann limit|Fermi energy>calc:fermi|Fermi gas>calc:fermi|Bose–Einstein condensation>calc:bec'),
       g('Advanced Quantum Mechanics', 'Dirac notation|Hilbert spaces|Hermitian & unitary operators|Matrix mechanics|Density matrices|Pure vs mixed states|Time-independent perturbation theory|Time-dependent perturbation theory|Variational method|Adiabatic theorem|Fermi\'s golden rule|Scattering theory|Born approximation'),
-      g('Quantum Information', 'Qubits|Bloch sphere|Superposition and measurement|Pauli X/Y/Z gates|Hadamard gate|Phase gates|CNOT and controlled gates|Quantum circuits|Entanglement|Bell states|Bell inequalities|EPR paradox|Quantum teleportation|No-cloning theorem|Grover\'s algorithm|Shor\'s algorithm|Quantum error correction'),
+      g('Quantum Information', 'Qubits>tool:qc|Bloch sphere>tool:qc|Superposition and measurement>tool:qc|Pauli X/Y/Z gates>tool:qc|Hadamard gate>tool:qc|Phase gates>tool:qc|CNOT and controlled gates>tool:qc|Quantum circuits>tool:qc|Entanglement>tool:qc|Bell states>tool:qc|Bell inequalities|EPR paradox|Quantum teleportation|No-cloning theorem|Grover\'s algorithm>tool:qc|Shor\'s algorithm|Quantum error correction'),
     ] },
     { id: 'sr', name: 'Special Relativity', groups: [
       g('Foundations', 'Inertial reference frames|Galilean relativity|Galilean transformations|Speed of light>tool:constants|Michelson–Morley experiment|Einstein\'s postulates>learn:time-dilation|Invariance of c'),
@@ -64,10 +64,10 @@ export const MATHS = {
   groups: [
     g('Core Mathematics', 'Arithmetic|Fractions|Ratios|Percentages|Algebra|Equations>tool:solver|Inequalities|Functions>tool:graph|Graphs>tool:graph|Polynomials>calc:poly-roots|Exponentials>eq:compound|Logarithms>eq:log|Sequences|Series'),
     g('Geometry & Trigonometry', 'Geometry|Coordinate geometry|Pythagoras>eq:pythag|Trigonometric functions>calc:triangle|Trig identities|Radians>tool:units|Sine/cosine rules>calc:triangle|Vectors>calc:vectors|3D geometry>calc:vectors'),
-    g('Calculus', 'Limits|Differentiation|Integration|Applications|Partial derivatives|Multiple integrals|Vector calculus|Gradient, divergence, curl|Line/surface integrals'),
-    g('Linear Algebra', 'Vectors|Matrices|Determinants|Matrix inversion|Systems of equations|Vector spaces|Linear transformations|Eigenvalues & eigenvectors'),
-    g('Differential Equations', 'First-order ODEs|Second-order ODEs>calc:shm-spring|Systems of ODEs|PDE introduction|Laplace transforms|Fourier series'),
-    g('Numerical Methods', 'Root finding>tool:solver|Bisection>tool:solver|Newton–Raphson>tool:solver|Numerical differentiation|Numerical integration|Euler method|Runge–Kutta>sim:pendulum|Interpolation|Numerical linear algebra>solver:truss'),
+    g('Calculus', 'Limits|Differentiation>tool:numerics|Integration>tool:numerics|Applications>tool:graph|Partial derivatives|Multiple integrals|Vector calculus|Gradient, divergence, curl|Line/surface integrals'),
+    g('Linear Algebra', 'Vectors>calc:vectors|Matrices>tool:matrix|Determinants>tool:matrix|Matrix inversion>tool:matrix|Systems of equations>tool:matrix|Vector spaces|Linear transformations>tool:matrix|Eigenvalues & eigenvectors>tool:matrix'),
+    g('Differential Equations', 'First-order ODEs>tool:numerics|Second-order ODEs>calc:shm-spring|Systems of ODEs>solver:vibration|PDE introduction|Laplace transforms|Fourier series>tool:fft'),
+    g('Numerical Methods', 'Root finding>tool:numerics|Bisection>tool:numerics|Newton–Raphson>tool:numerics|Numerical differentiation>tool:numerics|Numerical integration>tool:numerics|Euler method>tool:numerics|Runge–Kutta>tool:numerics|Interpolation>tool:data|Numerical linear algebra>tool:matrix'),
     g('Probability & Statistics', 'Probability>calc:binomial|Distributions>calc:normal-dist|Mean/variance/SD>tool:data|Binomial>calc:binomial|Poisson>calc:binomial|Normal distribution>calc:normal-dist|Confidence intervals>calc:conf-int|Hypothesis testing|Correlation>tool:data|Regression>tool:data|Error propagation>tool:uncertainty'),
   ],
 };
@@ -144,13 +144,13 @@ export const ENGINEERING = {
     { id: 'hvac', code: 'HVC', name: 'HVAC & Refrigeration', calc: ['hvac'], groups: [
       g('HVAC', 'Heating/cooling loads>calc:hvac-load|Sensible heat>calc:hvac-load|Latent heat>calc:hvac-load|Sensible heat ratio>calc:hvac-load|Airflow|Duct sizing>calc:duct|Pressure drop>calc:duct|Fan power|COP>calc:refrigeration|EER/SEER|Refrigeration ton ↔ kW>tool:units'),
       g('Refrigeration', 'Vapour-compression cycle>calc:refrigeration|Compressors|Condensers|Evaporators|Expansion valves|Refrigerants'),
-      g('Psychrometrics', 'Dry-bulb & wet-bulb temperature>calc:psychro|Relative humidity>calc:psychro|Humidity ratio>calc:psychro|Dew point>calc:psychro|Enthalpy>calc:psychro|Psychrometric chart'),
+      g('Psychrometrics', 'Dry-bulb & wet-bulb temperature>calc:psychro|Relative humidity>calc:psychro|Humidity ratio>calc:psychro|Dew point>calc:psychro|Enthalpy>calc:psychro|Psychrometric chart>tool:psychro'),
     ] },
     { id: 'chemical', code: 'CHE', name: 'Chemical', calc: ['chemical'], groups: [
       g('Chemical Engineering', 'Mass balances>calc:mixing|Energy balances>calc:afr|Process flow|Fluid transport>calc:pipe-flow|Heat transfer>calc:lmtd|Mass transfer|Diffusion>calc:carburizing|Reaction kinetics>calc:arrhenius|Reactor design>calc:reactor|Batch reactors>calc:arrhenius|CSTR>calc:reactor|PFR>calc:reactor|Distillation|Absorption|Extraction|Filtration|Separation|Process control'),
     ] },
     { id: 'signals', code: 'SIG', name: 'Signals & Systems', calc: ['signals'], groups: [
-      g('Signals & Systems', 'Continuous/discrete signals|Periodic signals|Sampling>calc:aliasing|Nyquist theorem>calc:aliasing|Aliasing>calc:aliasing|Convolution|Fourier series|Fourier transform|FFT|Laplace transform|Z-transform|Transfer functions|Frequency response>calc:opamp-filter|Filters>calc:opamp-filter|Noise>calc:adc|Signal-to-noise ratio>calc:adc|Spectral analysis'),
+      g('Signals & Systems', 'Continuous/discrete signals>tool:fft|Periodic signals>tool:fft|Sampling>calc:aliasing|Nyquist theorem>calc:aliasing|Aliasing>calc:aliasing|Convolution|Fourier series>tool:fft|Fourier transform>tool:fft|FFT>tool:fft|Laplace transform|Z-transform|Transfer functions|Frequency response>calc:opamp-filter|Filters>calc:opamp-filter|Noise>calc:adc|Signal-to-noise ratio>calc:adc|Spectral analysis>tool:fft'),
     ] },
     { id: 'energy', code: 'NRG', name: 'Renewable & Energy', calc: ['energy'], groups: [
       g('Solar', 'Solar irradiance|PV output>calc:solar-pv|Panel efficiency|Array sizing>calc:solar-pv|Battery sizing>calc:battery|Inverters'),
@@ -158,8 +158,8 @@ export const ENGINEERING = {
       g('Storage & Systems', 'Batteries>calc:battery|Flywheels>calc:flywheel|Pumped hydro>calc:hydro|Hydrogen|Thermal storage|Energy efficiency|Combined-cycle plants>calc:brayton|CHP|Heat pumps>calc:carnot|Grid storage'),
     ] },
     { id: 'computational', code: 'CMP', name: 'Computational Engineering', calc: [], groups: [
-      g('Programming', 'Python for engineers|Numerical computing|Arrays|Plotting>tool:graph|Data processing>tool:data|Symbolic maths'),
-      g('Numerical Engineering', 'Root finding>tool:solver|Optimization|Numerical integration|Numerical differentiation|ODE/PDE solving>sim:pendulum|Finite differences|FEM>solver:truss|CFD fundamentals|Monte Carlo simulation>tool:uncertainty'),
+      g('Programming', 'Python for engineers|Numerical computing>tool:api|Arrays|Plotting>tool:graph|Data processing>tool:data|Symbolic maths>tool:solver'),
+      g('Numerical Engineering', 'Root finding>tool:solver|Optimization>tool:solver|Numerical integration>tool:numerics|Numerical differentiation>tool:numerics|ODE/PDE solving>sim:pendulum|Finite differences|FEM>solver:truss|CFD fundamentals|Monte Carlo simulation>tool:uncertainty'),
     ] },
     { id: 'experimental', code: 'EXP', name: 'Experimental Engineering & Data', calc: [], groups: [
       g('Measurement & Data', 'Calibration|Accuracy vs precision|Resolution|Repeatability|Uncertainty>tool:uncertainty|Error propagation>tool:uncertainty|Experimental design|Sampling>calc:aliasing|Sensor data|Noise>calc:adc|Regression>tool:data|Curve fitting>tool:data|Residuals>tool:data|R²>tool:data|Confidence intervals>calc:conf-int|Data visualization>tool:graph|Dimensional analysis>tool:dimensions'),
@@ -180,6 +180,13 @@ export const TOOLS_LIST = [
   ['data', 'Data Analysis', 'Paste or import CSV: statistics, regression, residuals, R².'],
   ['uncertainty', 'Uncertainty Propagation', 'Linear (partial-derivative) and Monte Carlo propagation through any formula.'],
   ['dimensions', 'Dimensional Analysis', 'Check any equation for dimensional consistency.'],
+  ['ask', 'Ask (question interpreter)', 'Type a question in plain English — it picks the calculator, reads your quantities and units, and runs the real engine.'],
+  ['fft', 'Signal Analysis (FFT)', 'Windowed FFT amplitude spectrum, peaks, RMS and THD for generated or pasted signals.'],
+  ['matrix', 'Matrix Tool', 'Determinant, inverse, eigenvalues/eigenvectors, and linear systems Ax = b.'],
+  ['numerics', 'Numerical Methods Lab', 'Root finding, integration, differentiation and ODE integrators compared step by step.'],
+  ['psychro', 'Psychrometric Chart', 'Interactive moist-air chart with state points and process loads.'],
+  ['qc', 'Quantum Circuit Simulator', 'State-vector simulation of up to 5 qubits with Bloch vectors.'],
+  ['practice', 'Practice & Quizzes', 'Question bank, generated formula drills, timed quizzes and flashcards.'],
 ];
 
 export const REFERENCE_LIST = [
@@ -190,6 +197,7 @@ export const REFERENCE_LIST = [
   ['fluids', 'Fluid & Property Tables', 'Water, air, common liquids, gases and IAPWS-IF97 saturation.'],
   ['tables', 'Engineering Tables', 'ISO metric threads, bolt classes, NPS pipe sizes, roughness, K-factors.'],
   ['standards', 'Standards Guide', 'What ISO, ASME, ASTM, IEC, EN and others cover — and which calculators relate.'],
+  ['api', 'JavaScript API', 'Call any calculator, solver, equation or unit conversion from code via window.PHYSENG.'],
 ];
 
 export const PLATFORM = {
@@ -200,5 +208,5 @@ export const PLATFORM = {
 
 // Status of platform features in this build (for the content map / roadmap).
 export const FEATURE_STATUS = {
-  live: ['Lessons', 'Worked examples', 'Question bank', 'Topic questions', 'Automatic marking', 'Hints', 'Full solutions', 'Difficulty levels', 'Formula practice', 'Project workspaces', 'Saved calculations', 'Calculation history', 'Calculation sheets', 'PDF reports', 'Assumption tracking', 'Source/reference tracking', 'Unit-system selection', 'Material selection', 'Fluid selection', 'Reusable inputs', 'Shared calculations', 'CSV import/export', 'Data export', 'Projects', 'Calculations', 'Reports', 'Saved equations', 'Saved materials', 'Recent activity', 'Student/engineer mode', 'SI/Imperial', 'Default units', 'Education level', 'Datasets', 'Graphs'],
+  live: ['Multiple-choice questions', 'Topic progress', 'Flashcards', 'Quizzes', 'Timed tests', 'API access', 'Calculation templates', 'Lessons', 'Worked examples', 'Question bank', 'Topic questions', 'Automatic marking', 'Hints', 'Full solutions', 'Difficulty levels', 'Formula practice', 'Project workspaces', 'Saved calculations', 'Calculation history', 'Calculation sheets', 'PDF reports', 'Assumption tracking', 'Source/reference tracking', 'Unit-system selection', 'Material selection', 'Fluid selection', 'Reusable inputs', 'Shared calculations', 'CSV import/export', 'Data export', 'Projects', 'Calculations', 'Reports', 'Saved equations', 'Saved materials', 'Recent activity', 'Student/engineer mode', 'SI/Imperial', 'Default units', 'Education level', 'Datasets', 'Graphs'],
 };
