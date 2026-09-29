@@ -203,7 +203,8 @@ export function page(main, [id], query) {
     (r._warn || []).forEach(w => { m += `<div class="msg warn">${esc(w)}</div>`; });
     (r._info || []).forEach(w => { m += `<div class="msg info">${esc(w)}</div>`; });
     msgs.innerHTML = m;
-    viz.innerHTML = r._svg ? r._svg : r._plot ? plotSVG(r._plot.series, r._plot.opts) + legend(r._plot.series) : '';
+    const plots = r._plot ? (Array.isArray(r._plot) ? r._plot : [r._plot]) : [];
+    viz.innerHTML = (r._svg || '') + plots.map(pl => (pl.title ? `<h4 class="mt">${esc(pl.title)}</h4>` : '') + plotSVG(pl.series, pl.opts) + legend(pl.series)).join('');
     drawSIUnits();
     saveHist();
   }
@@ -272,7 +273,7 @@ export function page(main, [id], query) {
         : { label: i.label, value: i.fill ? (pickerOptions(i.type).find(o => o[0] === st.pick[i.k])?.[1] || 'Custom values') : i.type === 'select' ? i.options.find(o => o[0] === st.v[i.k])?.[1] : String(st.v[i.k]) }),
       outputs: c.outputs.filter(o => !o.adv || st.mode === 'advanced').map(o => ({ label: o.label, sym: o.sym, value: o.type === 'text' ? last[o.k] : fmt(fromSI(last[o.k], o.dim, st.ou[o.k]), 5), unit: o.type === 'text' ? '' : (st.ou[o.k] || o.note || ''), primary: o.primary })),
       eq: c.eq, assume: c.assume, limits: c.limits, refs: c.refs, warn: last._warn || [], info: last._info || [], checks: last._checks || [],
-      validation: (vb || []).map(v => v.source), viz: last._svg || (last._plot ? plotSVG(last._plot.series, last._plot.opts) : ''),
+      validation: (vb || []).map(v => v.source), viz: (last._svg || '') + (last._plot ? (Array.isArray(last._plot) ? last._plot : [last._plot]).map(pl => plotSVG(pl.series, pl.opts)).join('') : ''),
       share: `${location.href.split("#")[0]}#/calc/${id}?s=${encodeState({ v: st.v, u: st.u, m: st.mode })}`,
     };
     try { sessionStorage.setItem('physeng.report', JSON.stringify(payload)); } catch (e) { /* ignore */ }

@@ -4,6 +4,18 @@
 
 const d = Math.PI / 180;
 export const VALIDATION = {
+  'second-order': [{ inputs: { wn: 10, z: 0.4, K: 1 }, expect: { Mp: [Math.exp(-Math.PI * 0.4 / Math.sqrt(1 - 0.16)), 2e-3] }, source: 'M_p = exp(−πζ/√(1−ζ²)) = 25.38 %' }],
+  bode: [{ inputs: { num: '1', den: '1 3 3 1', k: 4, theta: 0 }, expect: { gm: [20 * Math.log10(2), 1e-3], wpc: [Math.sqrt(3), 1e-3] }, source: 'K/(s+1)³: phase crossover √3 rad/s, K_crit = 8 → GM = 6.02 dB at K = 4' }],
+  bearing: [{ inputs: { phi: 30 * d, shape: 'strip', c: 0, Df: 0, gam: 18e3, B: 1, FS: 1 }, expect: { Nq: [18.40, 1e-3], Nc: [30.14, 1e-3], Ng: [22.40, 1e-3] }, source: 'Vesić bearing capacity factors at φ = 30° (Das, Table 4.2)' }],
+  bragg: [{ inputs: { a: 0.3615e-9, h: 1, k: 1, l: 1, lam: 0.15406e-9, n: 1 }, expect: { tth: [43.32 * d, 1e-3] }, source: 'Cu (111) reflection with Cu Kα₁: 2θ ≈ 43.3°' }],
+  fermi: [{ inputs: { metal: '8.47e28' }, expect: { EF: [7.00 * 1.602176634e-19, 0.01], TF: [8.16e4, 0.01] }, source: 'Ashcroft & Mermin Table 2.1: Cu E_F = 7.00 eV, T_F = 8.16×10⁴ K' }],
+  zeeman: [{ inputs: { B: 1.5, sp: 'p' }, expect: { f: [63.866e6, 1e-4] }, source: '¹H Larmor frequency at 1.5 T (clinical MRI) = 63.87 MHz' }],
+  threshold: [{ inputs: { mb: 938.272, mt: 938.272, mf: 4 * 938.272 }, expect: { K: [6 * 938.272, 1e-9] }, source: 'p + p → p p p p̄: K_th = 6 m_p c² ≈ 5.63 GeV (Bevatron, 1955)' }],
+  'conf-int': [{ inputs: { mode: 'sum', xbar: 0, s: 1, n: 8, cl: 0.95 }, expect: { t: [2.3646, 1e-4] }, source: 'Student t₀.₉₇₅ with 7 d.o.f. = 2.3646' }],
+  'normal-dist': [{ inputs: { mu: 0, s: 1, x1: 1.96, x2: -1.96, p: 0.975 }, expect: { between: [0.9500, 1e-3], xp: [1.95996, 1e-4] }, source: 'Standard normal: P(|Z| < 1.96) = 95 %' }],
+  'kinetic-theory': [{ inputs: { M: 28.013, T: 300 }, expect: { vrms: [516.8, 1e-3] }, source: 'N₂ at 300 K: v_rms ≈ 517 m/s' }],
+  crystal: [{ inputs: { st: 'fcc', r: 0.128e-9, M: 63.5 }, expect: { rho: [8890, 0.005], apf: [0.74048, 1e-4] }, source: 'Callister Example 3.3: Cu theoretical density 8.89 g/cm³; FCC APF = 0.74' }],
+  'beam-freq': [{ inputs: { bc: 'ss', L: 1, E: 1, I: 1, mpl: 1 }, expect: { f1: [Math.PI / 2, 1e-9] }, source: 'Pinned–pinned: f₁ = (π²/2πL²)√(EI/ρA)' }],
   'shaft-torsion': [{ inputs: { T: 450, d: 0.035, di: 0 }, expect: { tau: [16 * 450 / (Math.PI * 0.035 ** 3), 1e-9] }, source: 'Closed form τ = 16T/πd³' }],
   'beam-cases': [
     { inputs: { case: 'ss_p', L: 4, P: 10e3, E: 210e9, I: 8.36e-6 }, expect: { dmax: [10e3 * 64 / (48 * 210e9 * 8.36e-6), 1e-9], Mmax: [10e3, 1e-9] }, source: 'Roark Table 8.1 case 1e' },

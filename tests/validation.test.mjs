@@ -21,7 +21,7 @@ test('every calculator computes finite results from its defaults', () => {
     const r = c.compute(defaults(c));
     for (const o of c.outputs) {
       if (o.type === 'text') { assert.equal(typeof r[o.k], 'string', `${c.id}.${o.k}`); continue; }
-      if (c.id === 'interval' && o.k === 'sig') continue; // proper distance undefined for a timelike default
+      if (o.optional) continue; // only defined for some modes (e.g. proper distance for spacelike intervals)
       assert.ok(Number.isFinite(r[o.k]), `${c.id}.${o.k} = ${r[o.k]}`);
     }
   }
