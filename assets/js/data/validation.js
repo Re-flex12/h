@@ -67,4 +67,9 @@ export const VALIDATION = {
     { inputs: { pH: 15e6, T3: 873.15, pL: 10e3, rh: 'yes', pR: 4e6, TR: 873.15 }, expect: { eta: [0.450, 3e-3], x4: [0.896, 3e-3] }, source: 'Çengel & Boles Ex. 10-4: reheat at 4 MPa/600 °C → η = 45.0 %, x₆ = 0.896' },
     { inputs: { pH: 3e6, T3: 623.15, pL: 75e3 }, expect: { eta: [0.260, 3e-3] }, source: 'Çengel & Boles Ex. 10-3a: 3 MPa/350 °C, 75 kPa → η = 26.0 %' },
   ],
+  'vcr-cycle': [
+    { inputs: { ref: 'R134a', Te: 263.15, Tc: 313.15, sh: 0, sc: 0, etaC: 1 }, expect: { COP: [4.02947, 1e-3], T2: [273.15 + 46.289, 1e-4], pe: [200603, 2e-3], pc: [1016590, 2e-3] }, source: 'CoolProp 8 reference EOS: R-134a ideal cycle −10/40 °C, COP = 4.029' },
+    { inputs: { ref: 'R717', Te: 243.15, Tc: 308.15, sh: 5, sc: 3, etaC: 0.7 }, expect: { COP: [1.98776, 2e-3], T2: [273.15 + 222.138, 5e-4] }, source: 'CoolProp 8: NH₃ −30/35 °C, η_is = 0.7 → COP 1.988, discharge 222 °C' },
+  ],
+  'refrigerant-props': [{ inputs: { ref: 'R134a', mode: 'T', T: 263.15 }, expect: { pd: [200.6e3, 2e-3] }, source: 'ASHRAE Fundamentals ch. 30: R-134a p_sat(−10 °C) = 200.6 kPa' }],
 };

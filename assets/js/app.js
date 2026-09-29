@@ -32,7 +32,7 @@ const ROUTES = [
   [/^reference$/, sections.reference, 'reference'],
   [/^reference\/equations$/, ref.equations, 'reference'], [/^reference\/equations\/([\w-]+)$/, ref.equation, 'reference'],
   [/^reference\/constants$/, ref.constants, 'reference'], [/^reference\/materials$/, ref.materials, 'reference'], [/^reference\/materials\/([\w-]+)$/, ref.material, 'reference'],
-  [/^reference\/compare$/, ref.compare, 'reference'], [/^reference\/fluids$/, ref.fluids, 'reference'], [/^reference\/steam$/, ref.steam, 'reference'], [/^reference\/tables$/, ref.tables, 'reference'], [/^reference\/standards$/, ref.standards, 'reference'], [/^reference\/api$/, ref.api, 'reference'],
+  [/^reference\/compare$/, ref.compare, 'reference'], [/^reference\/fluids$/, ref.fluids, 'reference'], [/^reference\/steam$/, ref.steam, 'reference'], [/^reference\/refrigerants$/, ref.refrigerants, 'reference'], [/^reference\/tables$/, ref.tables, 'reference'], [/^reference\/standards$/, ref.standards, 'reference'], [/^reference\/api$/, ref.api, 'reference'],
   [/^workspace$/, ws.page, 'workspace'], [/^report$/, calc.report, 'workspace'],
   [/^content-map$/, sections.contentMap, ''], [/^about$/, sections.about, ''],
 ];

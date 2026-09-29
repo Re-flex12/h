@@ -11,8 +11,9 @@ import relativity from './relativity.js';
 import engineering2 from './engineering2.js';
 import science2 from './science2.js';
 import steam from './steam.js';
+import refrig from './refrig.js';
 
-export const CALCS = [...mechanical, ...structural, ...fluids, ...thermo, ...steam, ...electrical, ...manufacturing, ...physics, ...quantum, ...relativity, ...engineering2, ...science2];
+export const CALCS = [...mechanical, ...structural, ...fluids, ...thermo, ...steam, ...refrig, ...electrical, ...manufacturing, ...physics, ...quantum, ...relativity, ...engineering2, ...science2];
 export const CALC = Object.fromEntries(CALCS.map(c => [c.id, c]));
 
 // Discipline metadata: code, name, section it belongs to.

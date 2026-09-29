@@ -39,7 +39,7 @@ export function toolHref(id) {
   if (id === 'qc') return '#/quantum/circuit';
   if (id === 'practice') return '#/learn/practice';
   if (id === 'api') return '#/reference/api';
-  if (['materials', 'constants', 'tables', 'fluids', 'steam', 'compare', 'standards', 'equations'].includes(id)) return `#/reference/${id}`;
+  if (['materials', 'constants', 'tables', 'fluids', 'steam', 'refrigerants', 'compare', 'standards', 'equations'].includes(id)) return `#/reference/${id}`;
   return `#/tools/${id}`;
 }
 export function href(kind, id) {

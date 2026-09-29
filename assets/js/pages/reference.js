@@ -3,6 +3,7 @@ import { CONSTANTS } from '../data/constants.js';
 import { MATERIALS, PROPS, DERIVED, getMaterial } from '../data/materials.js';
 import { WATER_TABLE, AIR_TABLE, FLUIDS, GASES, ROUGHNESS, psatIF97 } from '../data/fluids.js';
 import { steamPT, satP, satT, dome, steamPS } from '../data/if97.js';
+import { REFRIGERANTS, REFRIGERANT_LIST, SUP_DT } from '../data/refrigerants.js';
 import { THREADS, BOLT_CLASSES, PIPES, KFACTORS, STANDARDS } from '../data/reference.js';
 import { CALC, CALCS, DISCIPLINES } from '../calcs/index.js';
 import { LESSON } from '../data/lessons.js';
@@ -261,6 +262,41 @@ export function steam(main) {
   };
   main.querySelector('#stp').onchange = sup; main.querySelector('#stChart').onchange = chart;
   sup(); chart();
+}
+
+// ── Refrigerant tables ──────────────────────────────────────────
+export function refrigerants(main) {
+  const sel = new URLSearchParams(location.hash.split('?')[1] || '').get('r') || 'R134a';
+  main.innerHTML = `${crumbs([['Reference', '#/reference'], ['Refrigerants']])}${pageHead('07 / REF / RFG', 'Refrigerant Tables', 'Saturation (P–T) tables, key data and p–h diagrams for 11 refrigerants, generated from reference equations of state (CoolProp 8). Pressures shown absolute and gauge for field use.')}
+    <div class="row gap" style="flex-wrap:wrap;align-items:center"><select class="plain" id="rf">${REFRIGERANT_LIST.map(r => `<option value="${r.id}"${r.id === sel ? ' selected' : ''}>${esc(r.name)}</option>`).join('')}</select><a class="btn sm" href="#/calc/vcr-cycle">Cycle calculator →</a><a class="btn ghost sm" href="#/calc/refrigerant-props">Superheat / subcooling →</a><a class="btn ghost sm" href="#/calc/refrigerant-compare">Compare refrigerants →</a></div>
+    <div id="rfBody"></div>`;
+  const draw = () => {
+    const id = main.querySelector('#rf').value, r = REFRIGERANTS[id];
+    const glide = r.sat.some(q => Math.abs(q[1] / q[2] - 1) > 0.01);
+    const series = [{ x: [...r.sat.map(q => q[5]), ...r.sat.slice().reverse().map(q => q[6])], y: [...r.sat.map(q => q[1] / 1e5), ...r.sat.slice().reverse().map(q => q[2] / 1e5)], label: 'Saturation dome', color: 'var(--ink)', width: 2 }];
+    const T0 = r.sat[0][0], T1 = r.sat[r.sat.length - 1][0];
+    const iso = [];
+    for (let T = Math.ceil(T0 / 20) * 20; T <= T1 + 120; T += 20) iso.push(T);
+    iso.forEach((T, k) => {
+      const xs = [], ys = [];
+      r.sat.forEach((q, i) => { const d = T - q[0]; if (d < 0) return; let j = 0; while (j < SUP_DT.length - 1 && SUP_DT[j + 1] < d) j++; if (j >= SUP_DT.length - 1) return; const t = (d - SUP_DT[j]) / (SUP_DT[j + 1] - SUP_DT[j]); const a = r.sup[i][j][0], b = r.sup[i][j + 1][0]; if (a == null || b == null) return; xs.push(a + t * (b - a)); ys.push(q[2] / 1e5); });
+      if (xs.length > 1) series.push({ x: xs, y: ys, label: `${T} °C`, color: COLORS[(k + 1) % COLORS.length], width: 1 });
+    });
+    main.querySelector('#rfBody').innerHTML = `
+      <div class="grid g4 mt2">
+        <div class="card"><div class="small muted">Critical point</div><b>${r.Tc} °C · ${(r.pc / 1e5).toFixed(2)} bar</b></div>
+        <div class="card"><div class="small muted">Molar mass</div><b>${r.M} g/mol</b></div>
+        <div class="card"><div class="small muted">GWP₁₀₀ (AR4)</div><b>${r.gwp}</b></div>
+        <div class="card"><div class="small muted">ASHRAE 34 safety</div><b>${r.safety}</b></div>
+      </div>
+      <p class="muted">${esc(r.use)}${glide ? ' <b>Zeotropic:</b> bubble and dew pressures differ (temperature glide).' : ''}</p>
+      <div class="sec-head"><h2>p–h diagram</h2></div>${plotSVG(series, { xlabel: 'h (kJ/kg)', ylabel: 'p (bar abs)', logy: true, h: 420 })}${legend(series.slice(0, 1))}<p class="small muted">Coloured lines are isotherms in the superheated region.</p>
+      <div class="sec-head"><h2>Saturation table</h2></div>
+      <div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th class="num">T °C</th><th class="num">p${glide ? '_bubble' : ''} bar abs</th>${glide ? '<th class="num">p_dew bar abs</th>' : ''}<th class="num">p bar(g)</th><th class="num">p psig</th><th class="num">ρ_f kg/m³</th><th class="num">ρ_g kg/m³</th><th class="num">h_f kJ/kg</th><th class="num">h_fg kJ/kg</th><th class="num">h_g kJ/kg</th><th class="num">s_f kJ/kg·K</th><th class="num">s_g kJ/kg·K</th></tr></thead><tbody>${r.sat.map(q => `<tr><td class="num">${q[0].toFixed(q[0] % 1 ? 2 : 0)}</td><td class="num">${fmt(q[1] / 1e5, 5)}</td>${glide ? `<td class="num">${fmt(q[2] / 1e5, 5)}</td>` : ''}<td class="num">${fmt((q[2] - 101325) / 1e5, 4)}</td><td class="num">${fmt((q[2] - 101325) / 6894.757, 4)}</td><td class="num">${fmt(q[3], 5)}</td><td class="num">${fmt(q[4], 4)}</td><td class="num">${fmt(q[5], 5)}</td><td class="num">${fmt(q[6] - q[5], 5)}</td><td class="num">${fmt(q[6], 5)}</td><td class="num">${fmt(q[7], 5)}</td><td class="num">${fmt(q[8], 5)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="small muted">Source: CoolProp 8 (Bell et al., Ind. Eng. Chem. Res. 2014), using each fluid's reference equation of state and its default (IIR or ASHRAE) enthalpy/entropy reference state. Gauge values assume 1.01325 bar atmosphere. Blends are treated as pseudo-pure fluids.</p>`;
+  };
+  main.querySelector('#rf').onchange = draw;
+  draw();
 }
 
 export function tables(main) {
