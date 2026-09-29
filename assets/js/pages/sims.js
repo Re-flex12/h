@@ -1,6 +1,7 @@
 import { esc, fmt } from '../core/format.js';
 import { crumbs, pageHead, linkTile, SIMS } from './common.js';
 import { hermite } from '../calcs/quantum.js';
+import * as S2 from './sims2.js';
 
 export function index(main) {
   main.innerHTML = `${crumbs([['Tools', '#/tools'], ['Simulations']])}${pageHead('06 / TLS / SIM', 'Simulations', 'Drag things around instead of typing numbers. Every simulation integrates the real equations (RK4 where it matters) and shows the numbers behind the picture.')}
@@ -8,9 +9,9 @@ export function index(main) {
     <h4 class="mb mt2" style="color:var(--qr)">Quantum &amp; Relativity</h4><div class="grid auto">${Object.entries(SIMS).filter(([, s]) => s.sec === 'quantum').map(([id, s]) => linkTile(`#/sims/${id}`, 'Simulation · Q&R', s.title, s.d, 'Run →', 'qr')).join('')}</div>`;
 }
 
-const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+export const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
 
-function setupCanvas(cv, aspect = 0.5) {
+export function setupCanvas(cv, aspect = 0.5) {
   const fit = () => {
     const w = cv.clientWidth, h = Math.round(w * aspect), dpr = window.devicePixelRatio || 1;
     cv.style.height = h + 'px'; cv.width = w * dpr; cv.height = h * dpr;
@@ -20,10 +21,10 @@ function setupCanvas(cv, aspect = 0.5) {
   return fit;
 }
 
-function slider(id, label, min, max, step, val, unit = '') {
+export function slider(id, label, min, max, step, val, unit = '') {
   return `<div class="field"><label for="${id}"><span>${label}</span><span class="mono" id="${id}-v">${val}${unit}</span></label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`;
 }
-function bindSliders(root, ids, fmtr = {}) {
+export function bindSliders(root, ids, fmtr = {}) {
   const vals = {};
   ids.forEach(id => {
     const el = root.querySelector('#' + id), out = root.querySelector(`#${id}-v`);
@@ -33,7 +34,7 @@ function bindSliders(root, ids, fmtr = {}) {
   return vals;
 }
 
-function shell(main, id, controls, aspect = 0.5, extra = '') {
+export function shell(main, id, controls, aspect = 0.5, extra = '') {
   const s = SIMS[id];
   main.innerHTML = `${crumbs([['Simulations', '#/sims'], [s.title]])}${pageHead(s.sec === 'quantum' ? 'SIM / Q&R' : 'SIM / PHY', s.title, esc(s.d), s.sec === 'quantum')}
     <div class="calc"><div class="panel tick">${controls}</div><div><canvas class="sim" id="cv"></canvas><div id="ro" class="mt"></div>${extra}</div></div>`;
@@ -41,7 +42,7 @@ function shell(main, id, controls, aspect = 0.5, extra = '') {
   return { cv, fit: setupCanvas(cv, aspect), ro: main.querySelector('#ro') };
 }
 
-function loop(fn) {
+export function loop(fn) {
   let raf, last = performance.now(), alive = true;
   const step = t => { if (!alive) return; const dt = Math.min(0.05, (t - last) / 1000); last = t; fn(dt, t / 1000); raf = requestAnimationFrame(step); };
   raf = requestAnimationFrame(step);
@@ -49,7 +50,7 @@ function loop(fn) {
 }
 
 export function page(main, [id]) {
-  const f = { projectile, pendulum, 'double-slit': doubleSlit, wavefunction, minkowski, 'bh-orbit': bhOrbit }[id];
+  const f = { projectile, pendulum, 'double-slit': doubleSlit, wavefunction, minkowski, 'bh-orbit': bhOrbit, ...S2 }[id];
   if (!f) { main.innerHTML = 'Unknown simulation'; return; }
   return f(main);
 }

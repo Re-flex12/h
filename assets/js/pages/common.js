@@ -10,6 +10,18 @@ export const SIMS = {
   wavefunction: { title: 'Wavefunction Explorer', sec: 'quantum', d: 'Particle in a box and quantum harmonic oscillator: eigenstates, superpositions and time evolution.' },
   minkowski: { title: 'Minkowski Diagram', sec: 'quantum', d: 'Drag events, change the boost and watch simultaneity, time dilation and light cones.' },
   'bh-orbit': { title: 'Orbits Around a Black Hole', sec: 'quantum', d: 'Integrate Schwarzschild geodesics: precession, ISCO, plunge — vs Newtonian orbits.' },
+  collisions: { title: 'Collisions & Momentum', sec: 'physics', d: 'Two carts, any masses and restitution — momentum conserved, kinetic energy tracked.' },
+  waves: { title: 'Wave Superposition & Standing Waves', sec: 'physics', d: 'Add two travelling waves: standing waves, nodes, beats.' },
+  optics: { title: 'Thin Lens Ray Diagram', sec: 'physics', d: 'Drag the object; principal rays, real and virtual images, magnification.' },
+  efield: { title: 'Electric Fields & Potential', sec: 'physics', d: 'Drag point charges; field lines and a live potential map.' },
+  kepler: { title: 'Kepler Orbits & Equal Areas', sec: 'physics', d: 'Elliptical orbits from Kepler’s equation; equal areas in equal times.' },
+  heat: { title: 'Transient Heat Conduction', sec: 'physics', d: '1D rod with real material diffusivities — watch the temperature profile evolve.' },
+  tensile: { title: 'Tensile Test', sec: 'physics', d: 'Stress–strain curve, yielding, necking and fracture from database materials.' },
+  packet: { title: 'Quantum Tunnelling Wave Packet', sec: 'quantum', d: 'Time-dependent Schrödinger equation (split-step Fourier): a packet hits a barrier.' },
+  orbitals: { title: 'Hydrogen Orbitals', sec: 'quantum', d: 'Exact ψ_nlm slices for n ≤ 5 with phase — s, p, d, f, g orbitals.' },
+  lightclock: { title: 'Light Clock & Time Dilation', sec: 'quantum', d: 'The same photon clock seen from its rest frame and from the platform.' },
+  gwaves: { title: 'Gravitational-Wave Chirp', sec: 'quantum', d: 'Binary inspiral: the frequency and amplitude sweep up to merger.' },
+  universe: { title: 'Expanding Universe', sec: 'quantum', d: 'ΛCDM scale factor, stretching comoving grid and Hubble flow.' },
 };
 export const SOLVERS = {
   beam: { title: 'Beam Solver', d: 'Any supports (pin, roller, fixed), point loads, distributed/triangular loads and couples. Reactions, SFD, BMD, deflection, stress. Handles indeterminate beams.', live: true },
