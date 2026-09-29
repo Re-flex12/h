@@ -196,7 +196,7 @@ export function beam(main, _, query) {
   $('#addW').onclick = () => { st.loads.push({ type: 'udl', x1: 0, x2: st.L, w1: 5e3, w2: 5e3 }); drawForms(); solve(); };
   $('#addM').onclick = () => { st.loads.push({ type: 'moment', x: st.L / 2, M: 10e3 }); drawForms(); solve(); };
   $('#preset').onchange = () => { const p = BEAM_PRESETS[$('#preset').value]; if (p) { Object.assign(st, structuredClone(p)); drawForms(); solve(); } $('#preset').value = ''; };
-  const shareUrl = () => `${location.origin}${location.pathname}#/solvers/beam?s=${encodeState(st)}`;
+  const shareUrl = () => `${location.href.split("#")[0]}#/solvers/beam?s=${encodeState(st)}`;
   $('#bShare').onclick = () => navigator.clipboard?.writeText(shareUrl()).then(() => toast('Share link copied'), () => prompt('Copy:', shareUrl()));
   $('#bSave').onclick = () => saveToProject('beam', `Beam: L = ${fmt(c2('len', st.L), 3)} ${U.len}, ${st.supports.length} supports, ${st.loads.length} loads`, st, res && !res.error ? `|M|max = ${fmt(c2('mom', Math.abs(res.maxM.v)), 4)} ${U.mom}; δmax = ${fmt(c2('defl', Math.abs(res.maxDefl.v)), 4)} ${U.defl}` : '');
   $('#bSheet').onclick = () => {
@@ -355,7 +355,7 @@ export function truss(main, _, query) {
   $('#tAS').onclick = () => { st.supports.push({ node: 0, type: 'pin' }); forms(); solve(); };
   $('#tAL').onclick = () => { st.loads.push({ node: 0, Fx: 0, Fy: -10e3 }); forms(); solve(); };
   $('#tp').onchange = () => { const p = TRUSS_PRESETS[$('#tp').value]; if (p) { Object.assign(st, structuredClone(p)); computeView(); forms(); solve(); } $('#tp').value = ''; };
-  const shareUrl = () => `${location.origin}${location.pathname}#/solvers/truss?s=${encodeState(st)}`;
+  const shareUrl = () => `${location.href.split("#")[0]}#/solvers/truss?s=${encodeState(st)}`;
   $('#tShare').onclick = () => navigator.clipboard?.writeText(shareUrl()).then(() => toast('Share link copied'), () => prompt('Copy:', shareUrl()));
   $('#tSave').onclick = () => saveToProject('truss', `Truss: ${st.nodes.length} nodes, ${st.members.length} members`, st, res && !res.error ? `Max |N| = ${fmt(c2('force', Math.max(...res.forces.map(f => Math.abs(f.N)))), 4)} ${U.force}` : '');
   computeView(); forms(); solve();

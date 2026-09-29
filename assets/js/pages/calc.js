@@ -244,7 +244,7 @@ export function page(main, [id], query) {
   main.querySelector('#aReset').onclick = () => { location.hash = `#/calc/${id}`; if (!query.get('s')) page(main, [id], new URLSearchParams()); };
   main.querySelector('#aFav').onclick = e => { const on = toggleFav('calc:' + id); e.target.textContent = on ? '★ Saved' : '☆ Favourite'; toast(on ? 'Added to favourites' : 'Removed from favourites'); };
   main.querySelector('#aShare').onclick = () => {
-    const url = `${location.origin}${location.pathname}#/calc/${id}?s=${encodeState({ v: st.v, u: st.u, m: st.mode })}`;
+    const url = `${location.href.split("#")[0]}#/calc/${id}?s=${encodeState({ v: st.v, u: st.u, m: st.mode })}`;
     (navigator.clipboard?.writeText(url) || Promise.reject()).then(() => toast('Share link copied'), () => prompt('Copy this link:', url));
   };
   main.querySelector('#aSave').onclick = () => {
@@ -273,7 +273,7 @@ export function page(main, [id], query) {
       outputs: c.outputs.filter(o => !o.adv || st.mode === 'advanced').map(o => ({ label: o.label, sym: o.sym, value: o.type === 'text' ? last[o.k] : fmt(fromSI(last[o.k], o.dim, st.ou[o.k]), 5), unit: o.type === 'text' ? '' : (st.ou[o.k] || o.note || ''), primary: o.primary })),
       eq: c.eq, assume: c.assume, limits: c.limits, refs: c.refs, warn: last._warn || [], info: last._info || [], checks: last._checks || [],
       validation: (vb || []).map(v => v.source), viz: last._svg || (last._plot ? plotSVG(last._plot.series, last._plot.opts) : ''),
-      share: `${location.origin}${location.pathname}#/calc/${id}?s=${encodeState({ v: st.v, u: st.u, m: st.mode })}`,
+      share: `${location.href.split("#")[0]}#/calc/${id}?s=${encodeState({ v: st.v, u: st.u, m: st.mode })}`,
     };
     try { sessionStorage.setItem('physeng.report', JSON.stringify(payload)); } catch (e) { /* ignore */ }
     window.__physengReport = payload;

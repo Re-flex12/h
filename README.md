@@ -7,7 +7,10 @@ Static site, no build step: plain ES modules plus KaTeX (from a CDN) for maths r
 ```bash
 npm run serve      # python3 -m http.server 8080  → http://localhost:8080
 npm test           # node --test: calculators, solvers, units, equations, validation cases
+npm install && npm run build   # → dist/physeng.html — the whole site in ONE self-contained file
 ```
+
+`dist/physeng.html` bundles all JS, CSS, data and KaTeX (fonts embedded). Open it straight from disk or host it anywhere; it works offline (only the optional web fonts need a connection).
 
 ## What's in V1
 
