@@ -7,6 +7,7 @@ import * as calc from './pages/calc.js';
 import * as ref from './pages/reference.js';
 import * as tools from './pages/tools.js';
 import * as solvers from './pages/solvers.js';
+import * as solvers2 from './pages/solvers2.js';
 import * as sims from './pages/sims.js';
 import * as learn from './pages/learn.js';
 import * as ws from './pages/workspace.js';
@@ -20,7 +21,7 @@ const ROUTES = [
   [/^maths$/, sections.maths, 'maths'],
   [/^tools$/, sections.tools, 'tools'],
   [/^calculators$/, calc.library, 'tools'], [/^calc\/([\w-]+)$/, calc.page, 'tools'],
-  [/^solvers$/, solvers.index, 'tools'], [/^solvers\/beam$/, solvers.beam, 'tools'], [/^solvers\/truss$/, solvers.truss, 'tools'], [/^solvers\/([\w-]+)$/, solvers.planned, 'tools'],
+  [/^solvers$/, solvers.index, 'tools'], [/^solvers\/beam$/, solvers.beam, 'tools'], [/^solvers\/truss$/, solvers.truss, 'tools'], [/^solvers\/circuit$/, solvers2.circuit, 'tools'], [/^solvers\/pipe-network$/, solvers2.pipes, 'tools'], [/^solvers\/cycle$/, solvers2.cycle, 'tools'], [/^solvers\/vibration$/, solvers2.vibration, 'tools'], [/^solvers\/gear$/, solvers2.gear, 'tools'], [/^solvers\/([\w-]+)$/, solvers.planned, 'tools'],
   [/^sims$/, sims.index, 'tools'], [/^sims\/([\w-]+)$/, sims.page, 'tools'],
   [/^tools\/units$/, tools.units, 'tools'], [/^tools\/solver$/, tools.solver, 'tools'], [/^tools\/graph$/, tools.graph, 'tools'],
   [/^tools\/data$/, tools.data, 'tools'], [/^tools\/uncertainty$/, tools.uncertainty, 'tools'], [/^tools\/dimensions$/, tools.dimensions, 'tools'],

@@ -18,7 +18,7 @@ function build() {
   LESSONS.forEach(l => add('Learn', l.title, l.intro, `#/learn/${l.id}`, `${l.topic} lesson ${l.calcs?.join(' ')}`, 4));
   EQUATIONS.forEach(e => add('Equation', e.name, e.plain[0], `#/reference/equations/${e.id}`, `${e.plain.join(' ')} ${e.topic} ${e.v.map(v => v[1]).join(' ')}`, 2));
   CALCS.forEach(c => add('Calculator', c.title, c.summary, `#/calc/${c.id}`, `${c.tags.join(' ')} ${DISCIPLINES[c.disc]?.name} ${c.sub || ''} calculator`, 3));
-  Object.entries(SOLVERS).forEach(([id, s]) => add('Solver', s.title, s.live ? s.d : `Planned — ${s.d}`, `#/solvers/${id}`, 'solver', s.live ? 2 : -2));
+  Object.entries(SOLVERS).forEach(([id, s]) => add('Solver', s.title, s.live ? s.d : `Planned — ${s.d}`, s.href || `#/solvers/${id}`, 'solver', s.live ? 2 : -2));
   Object.entries(SIMS).forEach(([id, s]) => add('Simulation', s.title, s.d, `#/sims/${id}`, 'simulation interactive', 2));
   MATERIALS.forEach(m => add('Material', m.name, `${m.sub} · ${m.cond}`, `#/reference/materials/${m.id}`, `${m.uses} ${m.cat} ${m.id.replace(/-/g, ' ')}`, 1));
   CONSTANTS.forEach(([grp, key, name, , val, unit]) => add('Constant', name, `${val.toPrecision(10).replace(/\.?0+e/, 'e')} ${unit}`, `#/reference/constants#c-${key}`, `${grp} ${key} constant`));

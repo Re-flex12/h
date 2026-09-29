@@ -62,7 +62,7 @@ export function home(main) {
   </section>
   <div class="stats">
     <div><b>${CALCS.length}</b><span>Calculators</span></div><div><b>${EQUATIONS.length}</b><span>Equations</span></div><div><b>${t.n}</b><span>Topics mapped</span></div>
-    <div><b>${MATERIALS.length}</b><span>Materials</span></div><div><b>${CONSTANTS.length}</b><span>Constants</span></div><div><b>${Object.keys(SIMS).length + 2}</b><span>Sims & solvers</span></div><div><b>${validated}</b><span>Validation checks</span></div>
+    <div><b>${MATERIALS.length}</b><span>Materials</span></div><div><b>${CONSTANTS.length}</b><span>Constants</span></div><div><b>${Object.keys(SIMS).length + Object.values(SOLVERS).filter(s => s.live).length}</b><span>Sims & solvers</span></div><div><b>${validated}</b><span>Validation checks</span></div>
   </div>
 
   <div class="sec-head"><div><span class="code">02 / CALCULATE</span><h2>Popular tools</h2></div><a class="btn ghost sm" href="#/calculators">All ${CALCS.length} calculators →</a></div>
@@ -157,7 +157,7 @@ export function contentMap(main) {
     <div class="sec-head" id="m-3"><h2>Mathematics</h2></div>${taxGroups(MATHS.groups)}
     <div class="sec-head" id="m-4"><h2>Tools &amp; Reference</h2></div>
     <div class="tax"><div class="grp"><h3>Tools</h3><ul>${TOOLS_LIST.map(([id, tt]) => `<li class="live"><a href="${id === 'calculators' ? '#/calculators' : id === 'solvers' ? '#/solvers' : id === 'sims' ? '#/sims' : toolHref(id)}">${esc(tt)}</a></li>`).join('')}</ul></div>
-      <div class="grp"><h3>Solvers</h3><ul>${Object.entries(SOLVERS).map(([id, s]) => s.live ? `<li class="live"><a href="#/solvers/${id}">${esc(s.title)}</a></li>` : `<li>${esc(s.title)}</li>`).join('')}</ul></div>
+      <div class="grp"><h3>Solvers</h3><ul>${Object.entries(SOLVERS).map(([id, s]) => s.live ? `<li class="live"><a href="${s.href || `#/solvers/${id}`}">${esc(s.title)}</a></li>` : `<li>${esc(s.title)}</li>`).join('')}</ul></div>
       <div class="grp"><h3>Simulations</h3><ul>${Object.entries(SIMS).map(([id, s]) => `<li class="live"><a href="#/sims/${id}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       <div class="grp"><h3>Reference</h3><ul>${REFERENCE_LIST.map(([id, tt]) => `<li class="live"><a href="#/reference/${id}">${esc(tt)}</a></li>`).join('')}</ul></div></div>
     <div class="sec-head" id="m-5"><h2>Platform features</h2></div><div class="tax">${plat('Student features', PLATFORM.student)}${plat('Professional features', PLATFORM.professional)}${plat('Personal workspace', PLATFORM.workspace)}</div>`;

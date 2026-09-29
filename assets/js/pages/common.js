@@ -14,13 +14,13 @@ export const SIMS = {
 export const SOLVERS = {
   beam: { title: 'Beam Solver', d: 'Any supports (pin, roller, fixed), point loads, distributed/triangular loads and couples. Reactions, SFD, BMD, deflection, stress. Handles indeterminate beams.', live: true },
   truss: { title: 'Truss Solver', d: 'Pin-jointed 2D trusses by the direct stiffness method: member forces (tension/compression), reactions and displacements.', live: true },
-  circuit: { title: 'Circuit Solver', d: 'Drag components, nodal analysis, waveforms.', live: false },
-  'pipe-network': { title: 'Pipe Network Solver', d: 'Pipes, pumps, valves, reservoirs — Hardy Cross / Newton.', live: false },
-  gear: { title: 'Gear System Solver', d: 'Motor → gears → shafts → load.', live: false },
-  hx: { title: 'Heat Exchanger Solver', d: 'Multi-pass rating and sizing with fouling.', live: false },
-  cycle: { title: 'Thermodynamic Cycle Solver', d: 'P–V and T–s diagrams with real-fluid properties.', live: false },
-  pid: { title: 'PID / Control Solver', d: 'Step response, Bode, root locus.', live: false },
-  vibration: { title: 'Vibration Solver', d: 'MDOF modal analysis and frequency response.', live: false },
+  circuit: { title: 'Circuit Solver', d: 'DC and AC (phasor) modified nodal analysis with R, L, C and sources; node voltages, branch currents, power balance and frequency sweep.', live: true },
+  'pipe-network': { title: 'Pipe Network Solver', d: 'Reservoirs, junction demands, looped networks and pumps. Darcy–Colebrook friction, nodal Newton solution; flows, heads and pressures.', live: true },
+  gear: { title: 'Gear System & Drive Train Solver', d: 'Motor → belts, gears, chains, worms, planetaries → load. Speed, torque, power and minimum shaft size on every shaft.', live: true },
+  hx: { title: 'Heat Exchanger Solver', d: 'Rating (ε-NTU) and sizing (LMTD) for counterflow, parallel, shell-and-tube and crossflow exchangers.', live: true, href: '#/calc/entu' },
+  cycle: { title: 'Thermodynamic Cycle Solver', d: 'Otto, Diesel, Dual, Brayton, Carnot and Stirling cycles with state tables, P–v and T–s diagrams.', live: true },
+  pid: { title: 'PID / Control Solver', d: 'Closed-loop PID simulation, tuning rules, Bode/Nyquist margins and Routh–Hurwitz stability.', live: true, href: '#/calc/pid' },
+  vibration: { title: 'Vibration Solver (MDOF)', d: 'Spring–mass chains: natural frequencies, mode shapes and forced frequency response.', live: true },
 };
 
 export function toolHref(id) {
@@ -32,7 +32,7 @@ export function href(kind, id) {
     case 'calc': return `#/calc/${id}`;
     case 'learn': return `#/learn/${id}`;
     case 'sim': return `#/sims/${id}`;
-    case 'solver': return `#/solvers/${id}`;
+    case 'solver': return SOLVERS[id]?.href || `#/solvers/${id}`;
     case 'eq': return `#/reference/equations/${id}`;
     case 'tool': return toolHref(id);
     case 'material': return `#/reference/materials/${id}`;

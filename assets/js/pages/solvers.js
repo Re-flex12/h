@@ -10,7 +10,7 @@ import { encodeState, decodeState } from './calc.js';
 
 export function index(main) {
   main.innerHTML = `${crumbs([['Tools', '#/tools'], ['Solvers']])}${pageHead('06 / TLS / SOLVE', 'Solvers', 'A calculator handles one relation (torque + rpm → power). A solver handles a whole system. Live solvers are interactive and export calculation sheets; the rest are on the roadmap.')}
-    <div class="grid auto">${Object.entries(SOLVERS).map(([id, s]) => s.live ? linkTile(`#/solvers/${id}`, 'Solver · live', s.title, s.d, 'Open solver →') : `<div class="tile" style="opacity:.6"><span class="k"><span>Solver · planned</span><span class="badge plan">Roadmap</span></span><span class="t">${esc(s.title)}</span><span class="d">${esc(s.d)}</span></div>`).join('')}</div>`;
+    <div class="grid auto">${Object.entries(SOLVERS).map(([id, s]) => s.live ? linkTile(s.href || `#/solvers/${id}`, 'Solver · live', s.title, s.d, 'Open solver →') : `<div class="tile" style="opacity:.6"><span class="k"><span>Solver · planned</span><span class="badge plan">Roadmap</span></span><span class="t">${esc(s.title)}</span><span class="d">${esc(s.d)}</span></div>`).join('')}</div>`;
 }
 export function planned(main, [id]) {
   const s = SOLVERS[id];
