@@ -17,7 +17,7 @@ const FIGS = {
 
 export function index(main) {
   const prog = getProg();
-  const groups = [['physics', 'Physics'], ['engineering', 'Engineering'], ['quantum', 'Quantum & Relativity']];
+  const groups = [['physics', 'Physics'], ['engineering', 'Engineering'], ['quantum', 'Quantum & Relativity'], ['maths', 'Mathematics']];
   const nQ = LESSONS.reduce((s, l) => s + l.questions.length, 0);
   main.innerHTML = `${crumbs([['Learn']])}${pageHead('01 / LEARN', 'Learn', `Every lesson runs <b>Theory → Diagram → Equations → Worked example → Simulation → Questions → Apply</b>. Content adapts to your level (<b>${LEVEL_NAME[settings.level]}</b>); deeper material is one click away. ${LESSONS.length} lessons · ${nQ} marked questions.`)}
     ${groups.map(([k, n]) => `<div class="sec-head"><h2${k === 'quantum' ? ' style="color:var(--qr)"' : ''}>${n}</h2></div><div class="grid auto">${LESSONS.filter(l => l.section === k).map(l => {

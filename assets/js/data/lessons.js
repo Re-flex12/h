@@ -196,6 +196,202 @@ export const LESSONS = [
     ],
     calcs: ['black-hole', 'grav-dilation', 'chirp'], sims: ['bh-orbit'], eqs: ['schwarzschild', 'grav-td', 'efe'],
   },
+  {
+    id: 'ideal-gas', title: 'Ideal Gases and the First Law', section: 'engineering', topic: 'Thermodynamics', levels: ['school', 'uni', 'pro'],
+    intro: 'Pressure, volume and temperature of a gas are tied together by one equation; energy is tied together by another. Together they describe every piston, compressor and turbine.',
+    body: [
+      { eq: 'pV = nRT = mR_{specific}T' },
+      { eq: '\\Delta U = Q - W' },
+      { d: 'school', p: 'Temperature must be in kelvin. Doubling the absolute temperature at constant volume doubles the pressure. Heating a gas adds internal energy; letting it expand does work on the surroundings.' },
+      { d: 'uni', p: 'For a closed system the boundary work is $W = \\int p\\,dV$. Special cases: isobaric $W = p\\Delta V$, isothermal $W = p_1V_1\\ln(V_2/V_1)$, isentropic $pV^\\gamma$ = const with $W = (p_1V_1 - p_2V_2)/(\\gamma - 1)$. For ideal gases $\\Delta U = mc_v\\Delta T$ whatever the process.' },
+      { d: 'pro', p: 'Real gases deviate at high pressure/low temperature — use the compressibility factor $Z = pV/(mRT)$ or real-fluid property tables. Open systems (compressors, turbines) use enthalpy: $\\dot Q - \\dot W = \\dot m\\,\\Delta h$.' },
+    ],
+    example: { q: 'Air (R = 287 J/kg·K) at 100 kPa and 300 K is compressed isentropically (γ = 1.4) to one eighth of its volume. Find the final temperature.', steps: ['$T_2 = T_1 (V_1/V_2)^{\\gamma - 1}$', '$T_2 = 300 \\times 8^{0.4} = 300 \\times 2.297$', '$T_2 = 689$ K (416 °C).'], a: '≈ 689 K' },
+    questions: [
+      { q: 'A 50 L cylinder holds nitrogen at 20 °C and 200 bar. Treating it as ideal (R = 296.8 J/kg·K), what mass does it hold in kg?', ans: 11.50, unit: 'kg', hint: 'm = pV/(RT) with p in Pa, V in m³, T in K.', sol: '$m = (200\\times10^5)(0.050)/(296.8 \\times 293.15) = 11.5$ kg.' },
+      { q: 'A gas absorbs 500 J of heat and does 200 J of work. What is the change in internal energy (J)?', ans: 300, unit: 'J', sol: '$\\Delta U = Q - W = 500 - 200 = 300$ J.' },
+      { q: 'Air at 300 K is heated at constant pressure until its volume doubles. What is the final temperature in K?', ans: 600, unit: 'K', sol: 'At constant p, $V \\propto T$: $T_2 = 600$ K.' },
+    ],
+    calcs: ['ideal-gas', 'gas-process', 'heating'], solvers: ['cycle'], eqs: ['ideal-gas', 'first-law', 'isentropic'],
+  },
+  {
+    id: 'heat-transfer', title: 'Conduction, Convection and Radiation', section: 'engineering', topic: 'Heat transfer', levels: ['school', 'uni', 'pro'],
+    intro: 'Heat flows down temperature gradients by three mechanisms. Model each as a thermal resistance and add them up like an electrical circuit.',
+    body: [
+      { eq: '\\dot Q = \\frac{kA\\,\\Delta T}{L},\\quad \\dot Q = hA\\,\\Delta T,\\quad \\dot Q = \\varepsilon\\sigma A(T_s^4 - T_{sur}^4)' },
+      { eq: 'R_{cond} = \\frac{L}{kA},\\quad R_{conv} = \\frac{1}{hA},\\quad \\dot Q = \\frac{\\Delta T}{\\sum R}' },
+      { d: 'school', p: 'Conduction moves energy through solids (metals are good conductors, foams are insulators). Convection is heat carried by a moving fluid. Radiation needs no medium — it is how the Sun heats the Earth.' },
+      { d: 'uni', p: 'Series layers add resistances; parallel paths add conductances. The Biot number $Bi = hL_c/k$ decides whether a body cools uniformly (Bi < 0.1, lumped capacitance) or with internal gradients.' },
+      { d: 'pro', p: 'The convection coefficient $h$ comes from Nusselt correlations ($Nu = hL/k$ as a function of Re, Pr or Gr). Radiation can be linearised as $h_r = \\varepsilon\\sigma(T_s + T_{sur})(T_s^2 + T_{sur}^2)$ and added in parallel with convection.' },
+    ],
+    example: { q: 'A 200 mm brick wall (k = 0.72 W/m·K) has 20 °C inside and 0 °C outside surfaces. Heat loss per m²?', steps: ['$R = L/k = 0.2/0.72 = 0.278$ m²K/W.', '$q = \\Delta T/R = 20/0.278$.', '$q = 72$ W/m².'], a: '72 W/m²' },
+    questions: [
+      { q: 'What is the thermal resistance (K/W) of a 1 m² surface with convection coefficient h = 25 W/m²K?', ans: 0.04, unit: 'K/W', sol: '$R = 1/(hA) = 1/25 = 0.04$ K/W.' },
+      { q: 'A black body at 500 K radiates to surroundings at 300 K. Net flux in W/m²? (σ = 5.67×10⁻⁸)', ans: 3084.5, unit: 'W/m²', sol: '$q = \\sigma(500^4 - 300^4) = 5.67\\times10^{-8}(6.25\\times10^{10} - 8.1\\times10^9) = 3085$ W/m².' },
+    ],
+    calcs: ['wall', 'pipe-insulation', 'radiation', 'lumped', 'lmtd'], sims: ['heat'], eqs: ['fourier', 'convection', 'stefan'],
+  },
+  {
+    id: 'ac-power', title: 'AC Power and Three-Phase Systems', section: 'engineering', topic: 'Electrical', levels: ['uni', 'pro'],
+    intro: 'In AC circuits voltage and current can be out of step. That splits power into real work, reactive exchange and the apparent total the cables must carry.',
+    body: [
+      { eq: 'S = VI,\\quad P = VI\\cos\\phi,\\quad Q = VI\\sin\\phi,\\quad S^2 = P^2 + Q^2' },
+      { eq: 'P_{3\\phi} = \\sqrt3\\,V_LI_L\\cos\\phi' },
+      { d: 'uni', p: 'Inductive loads (motors) make current lag voltage. The power factor $\\cos\\phi$ is the fraction of apparent power doing real work. Capacitors supply reactive power locally, cutting line current — power-factor correction.' },
+      { d: 'pro', p: 'In a balanced star system $V_{ph} = V_L/\\sqrt3$ and $I_{ph} = I_L$; in delta $V_{ph} = V_L$, $I_{ph} = I_L/\\sqrt3$. Cable sizing, protective devices and voltage drop are set by line current — so poor power factor costs copper and losses.' },
+    ],
+    example: { q: 'A 400 V three-phase motor takes 22 kW at pf 0.85. Line current?', steps: ['$I_L = P/(\\sqrt3 V_L\\cos\\phi)$', '$= 22\\,000/(1.732 \\times 400 \\times 0.85)$', '$= 37.4$ A.'], a: '37.4 A' },
+    questions: [
+      { q: 'A single-phase load draws 10 A at 230 V with pf 0.8. Real power in W?', ans: 1840, unit: 'W', sol: '$P = VI\\cos\\phi = 230 \\times 10 \\times 0.8 = 1840$ W.' },
+      { q: 'For that load, what is the reactive power in var?', ans: 1380, unit: 'var', sol: '$Q = VI\\sin\\phi = 2300 \\times 0.6 = 1380$ var.' },
+      { q: 'Line voltage 400 V in a star system. Phase voltage in V?', ans: 230.9, unit: 'V', sol: '$400/\\sqrt3 = 230.9$ V.' },
+    ],
+    calcs: ['ac-power', 'three-phase', 'motor', 'transformer', 'voltage-drop'], solvers: ['circuit'], eqs: ['three-phase', 'epower'],
+  },
+  {
+    id: 'feedback-control', title: 'Feedback Control and PID', section: 'engineering', topic: 'Control systems', levels: ['uni', 'pro'],
+    intro: 'Measure, compare, correct. Feedback makes systems accurate despite disturbances — but too much gain makes them oscillate.',
+    body: [
+      { eq: 'u(t) = K_p e + K_i\\int e\\,dt + K_d\\frac{de}{dt}' },
+      { eq: 'G(s) = \\frac{\\omega_n^2}{s^2 + 2\\zeta\\omega_n s + \\omega_n^2},\\quad M_p = e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}}' },
+      { d: 'uni', p: 'Proportional action reduces error but leaves a steady-state offset for type-0 plants; integral action removes it; derivative action adds damping. Closed-loop stability requires all poles in the left half-plane — test with Routh–Hurwitz or read the Bode margins.' },
+      { d: 'pro', p: 'Aim for phase margin ≥ 45° and gain margin ≥ 6 dB. Dead time erodes phase margin linearly with frequency ($-\\omega\\theta$), which is why FOPDT processes need conservative tuning (SIMC, IMC). Add anti-windup whenever the actuator can saturate.' },
+    ],
+    example: { q: 'A second-order system has ζ = 0.4. What is its percent overshoot?', steps: ['$M_p = \\exp(-\\pi\\zeta/\\sqrt{1-\\zeta^2})$', '$= \\exp(-1.2566/0.9165) = \\exp(-1.371)$', '$= 0.254$ → 25.4 %.'], a: '25.4 %' },
+    questions: [
+      { q: 'For ζ = 0.5 and ω_n = 4 rad/s, estimate the 2 % settling time 4/(ζω_n) in s.', ans: 2, unit: 's', sol: '$t_s \\approx 4/(0.5 \\times 4) = 2$ s.' },
+      { q: 'What damping ratio gives 5 % overshoot? (answer to 3 s.f.)', ans: 0.690, unit: '', tol: 0.01, sol: '$\\zeta = -\\ln(0.05)/\\sqrt{\\pi^2 + \\ln^2 0.05} = 0.690$.' },
+    ],
+    calcs: ['second-order', 'pid', 'zn-tuning', 'bode', 'first-order'], eqs: [],
+  },
+  {
+    id: 'vibrations', title: 'Vibration and Resonance', section: 'engineering', topic: 'Dynamics', levels: ['school', 'uni', 'pro'],
+    intro: 'Everything with mass and stiffness has natural frequencies. Drive it near one and small forces create large motions.',
+    body: [
+      { eq: '\\omega_n = \\sqrt{k/m},\\quad \\zeta = \\frac{c}{2\\sqrt{km}}' },
+      { eq: '\\frac{Xk}{F_0} = \\frac{1}{\\sqrt{(1 - r^2)^2 + (2\\zeta r)^2}},\\quad r = \\omega/\\omega_n' },
+      { d: 'school', p: 'A child on a swing is pushed at the swing’s own frequency — each push adds energy. That is resonance. Bridges, engines and loudspeakers must all be designed with it in mind.' },
+      { d: 'uni', p: 'At resonance ($r = 1$) the magnification is $1/(2\\zeta)$ — 10× for 5 % damping. Above $r = \\sqrt2$ the force transmitted to the foundation is less than the applied force: the principle of vibration isolation (soft mounts).' },
+      { d: 'pro', p: 'Real structures have many modes. Solve $K\\phi = \\omega^2M\\phi$ for frequencies and shapes, keep excitation frequencies at least ±20–30 % away from modes, and check vibration severity against ISO 20816 for machinery.' },
+    ],
+    example: { q: 'A 50 kg machine sits on mounts of total stiffness 200 kN/m. Natural frequency?', steps: ['$\\omega_n = \\sqrt{200\\,000/50} = 63.2$ rad/s', '$f_n = \\omega_n/2\\pi$', '$= 10.1$ Hz.'], a: '10.1 Hz' },
+    questions: [
+      { q: 'A 2 kg mass on a 800 N/m spring: natural frequency in Hz?', ans: 3.183, unit: 'Hz', sol: '$f = \\frac{1}{2\\pi}\\sqrt{800/2} = 3.18$ Hz.' },
+      { q: 'With ζ = 0.05, what is the magnification factor at resonance?', ans: 10, unit: '', sol: '$1/(2\\zeta) = 10$.' },
+    ],
+    calcs: ['shm-spring', 'forced-vib', 'unbalance', 'beam-freq', 'critical-speed'], solvers: ['vibration'], sims: ['pendulum'], eqs: ['shm-period'],
+  },
+  {
+    id: 'fatigue-fracture', title: 'Fatigue and Fracture', section: 'engineering', topic: 'Materials', levels: ['uni', 'pro'],
+    intro: 'Most mechanical failures are fatigue: cracks that grow a little with every load cycle, at stresses well below yield.',
+    body: [
+      { eq: '\\frac{\\sigma_a}{S_e} + \\frac{\\sigma_m}{S_{ut}} = \\frac{1}{n}\\quad\\text{(modified Goodman)}' },
+      { eq: 'K_I = Y\\sigma\\sqrt{\\pi a},\\quad \\frac{da}{dN} = C(\\Delta K)^m' },
+      { d: 'uni', p: 'Steels show an endurance limit roughly half the tensile strength for polished specimens; real parts are weaker — Marin factors correct for surface finish, size, load type and reliability. Mean stress reduces allowable alternating stress (Goodman line).' },
+      { d: 'pro', p: 'Damage-tolerant design assumes a crack exists. Fracture occurs when $K_I$ reaches the toughness $K_{Ic}$; the Paris law integrates crack growth between inspections. Inspection intervals are set so a crack detectable today cannot reach critical size before the next inspection.' },
+    ],
+    example: { q: 'A plate with a 2 mm edge crack (Y = 1.12) carries 200 MPa. K_I?', steps: ['$K_I = 1.12 \\times 200 \\times \\sqrt{\\pi \\times 0.002}$', '$= 224 \\times 0.0793$', '$= 17.8$ MPa√m.'], a: '17.8 MPa√m' },
+    questions: [
+      { q: 'A steel has K_Ic = 50 MPa√m. Critical edge-crack depth (Y = 1.12) at 300 MPa, in mm?', ans: 7.05, unit: 'mm', sol: '$a_c = \\frac{1}{\\pi}(K_{Ic}/Y\\sigma)^2 = \\frac{1}{\\pi}(50/336)^2 = 7.05$ mm.' },
+      { q: 'σ_a = 150 MPa, σ_m = 100 MPa, S_e = 250 MPa, S_ut = 600 MPa. Goodman safety factor?', ans: 1.304, unit: '', sol: '$1/n = 150/250 + 100/600 = 0.767$, $n = 1.30$.' },
+    ],
+    calcs: ['fatigue', 'fracture', 'paris', 'mohr'], sims: ['tensile'], eqs: [],
+  },
+  {
+    id: 'induction', title: 'Electromagnetic Induction', section: 'physics', topic: 'Electricity & magnetism', levels: ['school', 'uni'],
+    intro: 'A changing magnetic flux through a circuit drives a current. Generators, transformers and induction hobs all run on this one law.',
+    body: [
+      { eq: '\\varepsilon = -N\\frac{d\\Phi}{dt},\\quad \\Phi = BA\\cos\\theta' },
+      { d: 'school', p: 'Move a magnet into a coil and the meter kicks; stop moving and it returns to zero. The faster the change, the bigger the induced EMF. Lenz’s law: the induced current opposes the change that caused it (energy conservation).' },
+      { d: 'uni', p: 'A coil rotating at ω in a uniform field gives $\\varepsilon = NBA\\omega\\sin\\omega t$ — the AC generator. Transformers use mutual induction: $V_s/V_p = N_s/N_p$ for an ideal transformer.' },
+    ],
+    example: { q: 'A 200-turn coil of area 0.01 m² sees B fall from 0.5 T to 0 in 0.1 s. Average EMF?', steps: ['$\\Delta\\Phi = 0.5 \\times 0.01 = 0.005$ Wb', '$\\varepsilon = N\\Delta\\Phi/\\Delta t = 200 \\times 0.005/0.1$', '$= 10$ V.'], a: '10 V' },
+    questions: [
+      { q: 'Peak EMF of a 100-turn, 0.02 m² coil spinning at 50 rev/s in 0.2 T?', ans: 125.66, unit: 'V', sol: '$\\varepsilon_0 = NBA\\omega = 100 \\times 0.2 \\times 0.02 \\times 2\\pi \\times 50 = 125.7$ V.' },
+      { q: 'An ideal transformer steps 230 V down to 12 V with 1000 primary turns. Secondary turns?', ans: 52.17, unit: '', tol: 0.02, sol: '$N_s = 1000 \\times 12/230 = 52$ turns.' },
+    ],
+    calcs: ['bfield', 'transformer'], eqs: ['faraday', 'transformer'],
+  },
+  {
+    id: 'gravitation', title: 'Circular Motion and Gravitation', section: 'physics', topic: 'Mechanics', levels: ['school', 'uni'],
+    intro: 'The same inverse-square force that drops an apple keeps the Moon — and every satellite — in orbit.',
+    body: [
+      { eq: 'F = \\frac{GMm}{r^2},\\quad \\frac{mv^2}{r} = \\frac{GMm}{r^2} \\Rightarrow v = \\sqrt{\\frac{GM}{r}}' },
+      { eq: 'T^2 = \\frac{4\\pi^2}{GM}r^3' },
+      { d: 'school', p: 'An object in circular motion is always accelerating towards the centre, even at constant speed. For orbits, gravity provides exactly the centripetal force needed.' },
+      { d: 'uni', p: 'Energy per unit mass in a circular orbit is $-GM/2r$; escape needs $v = \\sqrt{2GM/r}$. Elliptical orbits obey Kepler’s laws; the vis-viva equation $v^2 = GM(2/r - 1/a)$ gives speed anywhere on the ellipse.' },
+    ],
+    example: { q: 'Orbital speed of a satellite 400 km above Earth (R = 6371 km, GM = 3.986×10¹⁴)?', steps: ['$r = 6.771\\times10^6$ m', '$v = \\sqrt{3.986\\times10^{14}/6.771\\times10^6}$', '$= 7.67$ km/s.'], a: '7.67 km/s' },
+    questions: [
+      { q: 'Geostationary orbit period is 86 164 s. Orbit radius in km? (GM = 3.986×10¹⁴)', ans: 42164, unit: 'km', tol: 0.005, sol: '$r = (GMT^2/4\\pi^2)^{1/3} = 42\\,164$ km.' },
+      { q: 'Escape speed from Earth’s surface (R = 6371 km) in km/s?', ans: 11.19, unit: 'km/s', sol: '$\\sqrt{2GM/R} = 11.19$ km/s.' },
+    ],
+    calcs: ['circular', 'orbit'], sims: ['kepler', 'bh-orbit'], eqs: ['gravity', 'centripetal'],
+  },
+  {
+    id: 'schrodinger', title: 'Wavefunctions and the Schrödinger Equation', section: 'quantum', topic: 'Quantum mechanics', levels: ['uni', 'pro'],
+    intro: 'In quantum mechanics a particle is described by a wavefunction. Its square gives probabilities; the Schrödinger equation tells it how to evolve.',
+    body: [
+      { eq: 'i\\hbar\\frac{\\partial\\Psi}{\\partial t} = -\\frac{\\hbar^2}{2m}\\frac{\\partial^2\\Psi}{\\partial x^2} + V\\Psi' },
+      { eq: 'P(a \\le x \\le b) = \\int_a^b |\\Psi|^2 dx,\\quad \\int_{-\\infty}^{\\infty}|\\Psi|^2dx = 1' },
+      { d: 'uni', p: 'Separating variables gives stationary states $\\Psi = \\psi(x)e^{-iEt/\\hbar}$ with $\\hat H\\psi = E\\psi$. Confinement quantises energy: $E_n = n^2h^2/8mL^2$ in a box, $(n + \\tfrac12)\\hbar\\omega$ for an oscillator. Superpositions of different energies are not stationary — their probability density moves.' },
+      { d: 'pro', p: 'Numerically, the time-dependent equation is solved by split-step Fourier or Crank–Nicolson schemes, both unitary so probability is conserved. Barrier transmission explains alpha decay, STM imaging, tunnel diodes and flash memory.' },
+    ],
+    example: { q: 'Ground-state energy of an electron in a 1 nm infinite well?', steps: ['$E_1 = h^2/(8mL^2)$', '$= (6.626\\times10^{-34})^2/(8 \\times 9.109\\times10^{-31} \\times 10^{-18})$', '$= 6.02\\times10^{-20}$ J = 0.376 eV.'], a: '0.376 eV' },
+    questions: [
+      { q: 'For the same well, what is E₃ in eV?', ans: 3.384, unit: 'eV', sol: '$E_3 = 9E_1 = 3.38$ eV.' },
+      { q: 'Zero-point energy of an oscillator with ħω = 0.2 eV, in eV?', ans: 0.1, unit: 'eV', sol: '$E_0 = \\tfrac12\\hbar\\omega = 0.1$ eV.' },
+    ],
+    calcs: ['box', 'qho', 'tunnel', 'uncertainty'], sims: ['wavefunction', 'packet', 'orbitals'], eqs: ['schrodinger', 'box', 'heisenberg'],
+  },
+  {
+    id: 'mass-energy', title: 'E = mc² and Relativistic Energy', section: 'quantum', topic: 'Special relativity', levels: ['school', 'uni'],
+    intro: 'Mass is a form of energy. At everyday speeds kinetic energy is ½mv²; near the speed of light it grows without limit.',
+    body: [
+      { eq: 'E = \\gamma mc^2,\\quad E_0 = mc^2,\\quad K = (\\gamma - 1)mc^2' },
+      { eq: 'E^2 = (pc)^2 + (mc^2)^2' },
+      { d: 'school', p: 'One gram of matter is equivalent to 9×10¹³ J — about 21 kilotonnes of TNT. Nuclear reactions release energy because the products have slightly less mass than the reactants (the mass defect).' },
+      { d: 'uni', p: 'Momentum $p = \\gamma mv$ also grows without bound, so no finite force can accelerate a massive particle to $c$. Massless particles (photons) have $E = pc$. Particle physicists quote masses in MeV/c² and momenta in MeV/c.' },
+    ],
+    example: { q: 'Kinetic energy of an electron at 0.9c (m_ec² = 0.511 MeV)?', steps: ['$\\gamma = 1/\\sqrt{1 - 0.81} = 2.294$', '$K = (\\gamma - 1)m_ec^2 = 1.294 \\times 0.511$', '$= 0.661$ MeV.'], a: '0.661 MeV' },
+    questions: [
+      { q: 'Energy equivalent of 1 g of mass in TJ?', ans: 89.88, unit: 'TJ', sol: '$E = 10^{-3} \\times (2.998\\times10^8)^2 = 8.99\\times10^{13}$ J = 89.9 TJ.' },
+      { q: 'A proton has total energy 3 × its rest energy. What is γ?', ans: 3, unit: '', sol: '$E = \\gamma mc^2 \\Rightarrow \\gamma = 3$.' },
+    ],
+    calcs: ['mass-energy', 'rel-energy', 'binding', 'threshold'], eqs: ['emc2', 'energy-momentum'],
+  },
+  {
+    id: 'numerical-methods', title: 'Numerical Methods for Engineers', section: 'maths', topic: 'Numerical methods', levels: ['uni', 'pro'],
+    intro: 'Most real equations have no closed-form solution. Numerical methods turn them into arithmetic a computer can do — if you understand their errors.',
+    body: [
+      { eq: 'x_{n+1} = x_n - \\frac{f(x_n)}{f\'(x_n)}\\quad\\text{(Newton–Raphson)}' },
+      { eq: '\\int_a^b f\\,dx \\approx \\frac{h}{3}\\left[f_0 + 4f_1 + 2f_2 + \\dots + f_n\\right]\\quad\\text{(Simpson)}' },
+      { d: 'uni', p: 'Newton’s method converges quadratically near a simple root (the number of correct digits doubles each step) but can diverge from a poor start; bisection always converges but only linearly. Simpson’s rule has error $O(h^4)$, the trapezoid rule $O(h^2)$.' },
+      { d: 'pro', p: 'For ODEs, classical RK4 has global error $O(h^4)$; explicit methods have stability limits (e.g. $\\Delta t \\le \\Delta x^2/2\\alpha$ for diffusion). Finite differences show a V-shaped error curve: truncation falls with h until round-off takes over.' },
+    ],
+    example: { q: 'Apply one Newton step to f(x) = x² − 2 from x₀ = 1.5.', steps: ['$f(1.5) = 0.25$, $f\'(1.5) = 3$', '$x_1 = 1.5 - 0.25/3$', '$= 1.41667$ (√2 = 1.41421).'], a: '1.41667' },
+    questions: [
+      { q: 'Trapezoid rule with one interval for ∫₀¹ x² dx?', ans: 0.5, unit: '', sol: '$h/2\\,[f(0) + f(1)] = 0.5$ (exact 1/3).' },
+      { q: "Simpson's rule with two intervals for ∫₀¹ x² dx?", ans: 0.3333, unit: '', sol: '$\\frac{0.5}{3}[0 + 4(0.25) + 1] = 1/3$ — exact for cubics.' },
+    ],
+    calcs: ['poly-roots'], tools: ['numerics', 'matrix', 'solver'], eqs: [],
+  },
+  {
+    id: 'uncertainty', title: 'Measurement Uncertainty', section: 'maths', topic: 'Experimental methods', levels: ['school', 'uni', 'pro'],
+    intro: 'A measurement without an uncertainty is only half a result. Propagate uncertainties to know how far to trust a calculated value.',
+    body: [
+      { eq: '\\sigma_f^2 = \\sum_i\\left(\\frac{\\partial f}{\\partial x_i}\\sigma_i\\right)^2' },
+      { d: 'school', p: 'Adding or subtracting: add absolute uncertainties. Multiplying or dividing: add percentage uncertainties. Powers multiply the percentage uncertainty. Repeat readings to reduce random error; systematic errors (zero offsets, calibration) do not average out.' },
+      { d: 'uni', p: 'The general formula above (first-order GUM) combines independent standard uncertainties in quadrature. The standard error of a mean falls as $1/\\sqrt n$. Confidence intervals use Student’s t for small samples.' },
+      { d: 'pro', p: 'For non-linear models or large uncertainties, use Monte Carlo propagation (GUM Supplement 1). Report expanded uncertainty $U = k u_c$ with coverage factor k (≈ 2 for 95 %).' },
+    ],
+    example: { q: 'g from a pendulum: L = 0.995 ± 0.002 m, T = 2.003 ± 0.010 s. Relative uncertainty in g = 4π²L/T²?', steps: ['$u_L/L = 0.20$ %', '$2u_T/T = 1.00$ %', '$u_g/g = \\sqrt{0.20^2 + 1.00^2} = 1.02$ %.'], a: '≈ 1.0 %' },
+    questions: [
+      { q: 'Length 20.0 ± 0.1 cm and width 10.0 ± 0.1 cm. Percentage uncertainty in area (simple addition rule)?', ans: 1.5, unit: '%', sol: '$0.5\\% + 1.0\\% = 1.5\\%$.' },
+      { q: 'Ten readings have SD 0.30. Standard error of the mean?', ans: 0.0949, unit: '', sol: '$0.30/\\sqrt{10} = 0.095$.' },
+    ],
+    calcs: ['conf-int', 'normal-dist'], tools: ['uncertainty', 'data'], eqs: ['std-error'],
+  },
 ];
 
 export const LESSON = Object.fromEntries(LESSONS.map(l => [l.id, l]));
