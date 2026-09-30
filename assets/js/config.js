@@ -9,7 +9,7 @@ export const TERMS_VERSION = '2026-09-30';
 
 // Shown in the Terms of Service and Privacy Policy. Fill these in before launch.
 export const LEGAL = {
-  operator: 'Hamza Abdelwahab',
+  operator: 'the PHYSENG team',
   contactEmail: 'mabduallah74@gmail.com',
   jurisdiction: 'the United Arab Emirates',
   hostingRegion: 'Asia-Pacific (Sydney)',   // Supabase project region
