@@ -9,7 +9,7 @@ import { getProjects } from '../core/store.js';
 const q = (main) => new URLSearchParams(location.hash.split('?')[1] || '');
 const field = (id, label, type = 'text', extra = '') => `<div class="field"><label for="${id}"><span>${label}</span></label><div class="in"><input id="${id}" type="${type}" ${extra}></div></div>`;
 const card = (inner) => `<div class="auth-card panel tick">${inner}</div>`;
-const msg = (main, kind, html) => { const m = main.querySelector('#amsg'); m.className = `msg ${kind} mt`; m.innerHTML = html; m.hidden = false; };
+const msg = (root, kind, html) => { const m = root.querySelector('#amsg'); m.className = `msg ${kind} mt`; m.innerHTML = html; m.hidden = false; };
 const busy = (btn, on, label) => { btn.disabled = on; btn.textContent = on ? 'Please wait…' : label; };
 
 function notReady(main, title) {
@@ -29,57 +29,108 @@ function notReady(main, title) {
   return false;
 }
 
+// ── Reusable forms (used by the pages and by the entry screen) ───────────────
+export const signinFormHtml = () => `<form data-auth="signin" novalidate>${field('email', 'Email', 'email', 'autocomplete="email" required')}${field('pw', 'Password', 'password', 'autocomplete="current-password" required')}
+  <div class="row gap mt" style="align-items:center;justify-content:space-between"><button class="btn" id="go" type="submit">Log in</button><a href="#/forgot-password" class="small" data-close>Forgot password?</a></div>
+  <div id="amsg" hidden></div></form>`;
+export const signupFormHtml = () => `<form data-auth="signup" novalidate>${field('name', 'Name (optional)', 'text', 'autocomplete="name" maxlength="80"')}
+  <div class="field"><label for="role"><span>I am a… (optional)</span></label><div class="in"><select id="role"><option value="">Prefer not to say</option><option value="student">Student</option><option value="teacher">Teacher / lecturer</option><option value="engineer">Engineer</option><option value="other">Other</option></select></div></div>
+  ${field('email', 'Email', 'email', 'autocomplete="email" required')}${field('pw', 'Password', 'password', 'autocomplete="new-password" required minlength="8"')}
+  <p class="small muted">At least 8 characters, with letters and numbers.</p>
+  <label class="check mt"><input type="checkbox" id="terms"> <span>I have read and agree to the <a href="#/terms" target="_blank">Terms of Service</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</span></label>
+  <label class="check mt"><input type="checkbox" id="age"> <span>I am 13 or older, or I have my parent or guardian's permission.</span></label>
+  <div class="row gap mt"><button class="btn" id="go" type="submit" disabled>Create account</button></div>
+  <div id="amsg" hidden></div></form>`;
+
+export function bindSignin(root, { onDone = () => { location.hash = '#/account'; } } = {}) {
+  const f = root.querySelector('form[data-auth="signin"]');
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = f.querySelector('#go'), email = f.querySelector('#email').value.trim(), password = f.querySelector('#pw').value;
+    if (!email || !password) { msg(root, 'warn', 'Enter your email and password.'); return; }
+    busy(btn, true, 'Log in');
+    try { await auth.signIn({ email, password }); toast('Logged in'); onDone(); }
+    catch (x) {
+      msg(root, 'warn', esc(x.message) + (/confirm your email/.test(x.message) ? ' <button class="btn ghost sm" id="resend" type="button">Resend link</button>' : ''));
+      root.querySelector('#resend')?.addEventListener('click', async () => { try { await auth.resendConfirmation(email); msg(root, 'good', 'Confirmation email sent.'); } catch (y) { msg(root, 'warn', esc(y.message)); } });
+    }
+    finally { busy(btn, false, 'Log in'); }
+  };
+}
+
+export function bindSignup(root, { onDone = () => { location.hash = '#/account?welcome=1'; } } = {}) {
+  const f = root.querySelector('form[data-auth="signup"]');
+  const t = f.querySelector('#terms'), a = f.querySelector('#age'), btn = f.querySelector('#go');
+  const gate = () => { btn.disabled = !(t.checked && a.checked); };
+  t.onchange = gate; a.onchange = gate;
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const email = f.querySelector('#email').value.trim(), password = f.querySelector('#pw').value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg(root, 'warn', 'Enter a valid email address.'); return; }
+    busy(btn, true, 'Create account');
+    try {
+      const r = await auth.signUp({ email, password, name: f.querySelector('#name').value.trim(), role: f.querySelector('#role').value, acceptedTerms: t.checked, ageOk: a.checked });
+      if (r.needsConfirmation) f.innerHTML = `<div class="msg good">Almost done — we have sent a confirmation link to <b>${esc(email)}</b>. Open it on this device to finish creating your account.</div><p class="small muted mt">No email after a few minutes? Check spam, or log in to resend it.</p>`;
+      else { toast('Account created'); onDone(); }
+    } catch (x) { msg(root, 'warn', esc(x.message)); busy(btn, false, 'Create account'); gate(); }
+  };
+}
+
 export function signin(main) {
-  if (notReady(main, 'Sign in')) return;
+  if (notReady(main, 'Log in')) return;
   if (auth.getState().user) { location.hash = '#/account'; return; }
   const err = q().get('error');
-  main.innerHTML = `${crumbs([['Sign in']])}${pageHead('ACCOUNT / SIGN IN', 'Sign in', 'Keep your projects, history and progress with your account.')}
-    ${card(`<form id="f" novalidate>${field('email', 'Email', 'email', 'autocomplete="email" required')}${field('pw', 'Password', 'password', 'autocomplete="current-password" required')}
-      <div class="row gap mt" style="align-items:center;justify-content:space-between"><button class="btn" id="go" type="submit">Sign in</button><a href="#/forgot-password" class="small">Forgot password?</a></div>
-      <div id="amsg" hidden></div></form>
-      <p class="muted mt2">New here? <a href="#/signup">Create an account</a>.</p>`)}`;
+  main.innerHTML = `${crumbs([['Log in']])}${pageHead('ACCOUNT / LOG IN', 'Log in', 'Keep your projects, history and progress with your account.')}
+    ${card(`${signinFormHtml()}<p class="muted mt2">New here? <a href="#/signup">Create an account</a>.</p>`)}`;
   if (err) msg(main, 'warn', esc(err));
-  main.querySelector('#f').onsubmit = async (e) => {
-    e.preventDefault();
-    const btn = main.querySelector('#go'), email = main.querySelector('#email').value.trim(), password = main.querySelector('#pw').value;
-    if (!email || !password) { msg(main, 'warn', 'Enter your email and password.'); return; }
-    busy(btn, true, 'Sign in');
-    try { await auth.signIn({ email, password }); toast('Signed in'); location.hash = '#/account'; }
-    catch (x) {
-      msg(main, 'warn', esc(x.message) + (/confirm your email/.test(x.message) ? ' <button class="btn ghost sm" id="resend" type="button">Resend link</button>' : ''));
-      main.querySelector('#resend')?.addEventListener('click', async () => { try { await auth.resendConfirmation(email); msg(main, 'good', 'Confirmation email sent.'); } catch (y) { msg(main, 'warn', esc(y.message)); } });
-    }
-    finally { busy(btn, false, 'Sign in'); }
-  };
+  bindSignin(main);
 }
 
 export function signup(main) {
   if (notReady(main, 'Create account')) return;
   if (auth.getState().user) { location.hash = '#/account'; return; }
-  main.innerHTML = `${crumbs([['Create account']])}${pageHead('ACCOUNT / SIGN UP', 'Create an account', 'Free. Accounts are optional — every tool works without one.')}
-    ${card(`<form id="f" novalidate>${field('name', 'Name (optional)', 'text', 'autocomplete="name" maxlength="80"')}
-      <div class="field"><label for="role"><span>I am a… (optional)</span></label><div class="in"><select id="role"><option value="">Prefer not to say</option><option value="student">Student</option><option value="teacher">Teacher / lecturer</option><option value="engineer">Engineer</option><option value="other">Other</option></select></div></div>
-      ${field('email', 'Email', 'email', 'autocomplete="email" required')}${field('pw', 'Password', 'password', 'autocomplete="new-password" required minlength="8"')}
-      <p class="small muted">At least 8 characters, with letters and numbers.</p>
-      <label class="check mt"><input type="checkbox" id="terms"> <span>I have read and agree to the <a href="#/terms" target="_blank">Terms of Service</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</span></label>
-      <label class="check mt"><input type="checkbox" id="age"> <span>I am 13 or older, or I have my parent or guardian's permission.</span></label>
-      <div class="row gap mt"><button class="btn" id="go" type="submit" disabled>Create account</button></div>
-      <div id="amsg" hidden></div></form>
-      <p class="muted mt2">Already have an account? <a href="#/signin">Sign in</a>.</p>`)}`;
-  const t = main.querySelector('#terms'), a = main.querySelector('#age'), btn = main.querySelector('#go');
-  const gate = () => { btn.disabled = !(t.checked && a.checked); };
-  t.onchange = gate; a.onchange = gate;
-  main.querySelector('#f').onsubmit = async (e) => {
-    e.preventDefault();
-    const email = main.querySelector('#email').value.trim(), password = main.querySelector('#pw').value;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg(main, 'warn', 'Enter a valid email address.'); return; }
-    busy(btn, true, 'Create account');
-    try {
-      const r = await auth.signUp({ email, password, name: main.querySelector('#name').value.trim(), role: main.querySelector('#role').value, acceptedTerms: t.checked, ageOk: a.checked });
-      if (r.needsConfirmation) main.querySelector('#f').innerHTML = `<div class="msg good">Almost done — we have sent a confirmation link to <b>${esc(email)}</b>. Open it on this device to finish creating your account.</div><p class="small muted mt">No email after a few minutes? Check spam, or <a href="#/signin">sign in</a> to resend it.</p>`;
-      else { toast('Account created'); location.hash = '#/account?welcome=1'; }
-    } catch (x) { msg(main, 'warn', esc(x.message)); busy(btn, false, 'Create account'); gate(); }
+  main.innerHTML = `${crumbs([['Create account']])}${pageHead('ACCOUNT / SIGN UP', 'Create an account', 'Free. Keeps your projects in sync across devices.')}
+    ${card(`${signupFormHtml()}<p class="muted mt2">Already have an account? <a href="#/signin">Log in</a>.</p>`)}`;
+  bindSignup(main);
+}
+
+// ── Entry screen: sign up / log in when a signed-out visitor arrives ─────────
+const ENTRY_KEY = 'physeng.entry.guestUntil';
+const guestUntil = () => { try { return Number(localStorage.getItem(ENTRY_KEY)) || 0; } catch (e) { return 0; } };
+export function showEntry({ force = false, tab = 'signup' } = {}) {
+  const st = auth.getState();
+  if (!auth.available() || st.blocked || st.user || document.getElementById('entry')) return;
+  if (!force && (guestUntil() > Date.now() || /^#\/(signin|signup|forgot-password|reset-password|terms|privacy|account)/.test(location.hash))) return;
+  const el = document.createElement('div');
+  el.id = 'entry'; el.className = 'entry';
+  el.innerHTML = `<div class="entry-box" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+    <div class="entry-side">
+      <div class="entry-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(45 12 12)"><path d="M12 2C15.6 5 16.6 9.2 16 15.2H8C7.4 9.2 8.4 5 12 2Z"/><circle cx="12" cy="9" r="1.9"/><path d="M8.2 11.6 4.8 16.6l3.4-.6M15.8 11.6l3.4 5-3.4-.6"/><path class="fill" d="M9.9 16.4 12 22.4l2.1-6Z"/></g></svg><div><b>PHYS</b><span>ENG</span></div></div>
+      <h2 id="entryTitle">Learn it. Calculate it.<br>Simulate it. Apply it.</h2>
+      <ul><li>170+ calculators with stated equations, units and sources</li><li>Solvers, 26 simulations, steam and refrigerant tables</li><li>Lessons, lab guides and exam-style papers</li><li><b>Account:</b> projects synced across your devices</li></ul>
+    </div>
+    <div class="entry-main">
+      <div class="tabs entry-tabs"><button data-tab="signup">Sign up</button><button data-tab="signin">Log in</button></div>
+      <div id="entryForm"></div>
+      <button class="btn ghost entry-guest" id="guest" type="button">Continue without an account →</button>
+      <p class="small muted">Everything works without an account; your work is then kept in this browser only.</p>
+    </div></div>`;
+  document.body.appendChild(el);
+  document.body.classList.add('entry-open');
+  const close = () => { el.remove(); document.body.classList.remove('entry-open'); };
+  const show = (which) => {
+    el.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === which));
+    const box = el.querySelector('#entryForm');
+    box.innerHTML = which === 'signin' ? signinFormHtml() : signupFormHtml();
+    (which === 'signin' ? bindSignin : bindSignup)(box, { onDone: close });
+    box.querySelectorAll('[data-close], a[href^="#/"]:not([target])').forEach(a => a.addEventListener('click', close));
+    box.querySelector('input')?.focus();
   };
+  el.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => show(b.dataset.tab));
+  el.querySelector('#guest').onclick = () => { try { localStorage.setItem(ENTRY_KEY, String(Date.now() + 30 * 864e5)); } catch (e) { /* ignore */ } close(); };
+  el.addEventListener('keydown', e => { if (e.key === 'Escape') el.querySelector('#guest').click(); });
+  auth.onAuth(s => { if (s.user && el.isConnected) close(); });
+  show(tab);
 }
 
 export function forgot(main) {

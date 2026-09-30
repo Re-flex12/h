@@ -113,8 +113,10 @@ function initAccount() {
     if (!auth.configured()) { btn.hidden = true; return; }
     btn.hidden = false;
     if (st.user) { const n = st.user.user_metadata?.display_name || st.user.email || 'Account'; btn.textContent = n.slice(0, 1).toUpperCase(); btn.title = `Account — ${n}`; btn.href = '#/account'; btn.classList.add('on'); account.showTermsPrompt(); }
-    else { btn.textContent = 'Sign in'; btn.title = 'Sign in'; btn.href = '#/signin'; btn.classList.remove('on'); document.getElementById('termsModal')?.remove(); }
+    else { btn.textContent = 'Log in'; btn.title = 'Log in or sign up'; btn.href = '#/signin'; btn.classList.remove('on'); document.getElementById('termsModal')?.remove(); if (st.ready) account.showEntry(); }
   };
+  // Signed out: the header button opens the entry screen instead of leaving the page.
+  btn.addEventListener('click', e => { const st = auth.getState(); if (!st.user && auth.available() && !st.blocked) { e.preventDefault(); account.showEntry({ force: true, tab: 'signin' }); } });
   auth.onAuth(paint);
   let prev = null;
   auth.onAuth(st => { const id = st.user?.id || null; if (st.ready && id !== prev) { const was = prev; prev = id; if (was !== null || id !== null) { const p = location.hash; if (/^#\/(account|signin|signup|reset-password)/.test(p)) route(); } } });

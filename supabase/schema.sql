@@ -18,11 +18,11 @@ alter table public.profiles enable row level security;
 -- Users can read and update only their own profile. Inserts happen through the trigger below.
 drop policy if exists "profiles: read own" on public.profiles;
 create policy "profiles: read own" on public.profiles
-  for select using (auth.uid() = id);
+  for select to authenticated using ((select auth.uid()) = id);
 
 drop policy if exists "profiles: update own" on public.profiles;
 create policy "profiles: update own" on public.profiles
-  for update using (auth.uid() = id) with check (auth.uid() = id);
+  for update to authenticated using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
 -- 2. Create the profile at sign-up, recording Terms acceptance --------------------------------
 -- The client sends terms_version / terms_accepted_at in the sign-up metadata; sign-up is refused
@@ -108,13 +108,12 @@ create table if not exists public.projects (
   constraint projects_size check (pg_column_size(data) <= 1048576)   -- 1 MB per project
 );
 
-create index if not exists projects_user_updated on public.projects (user_id, server_updated_at);
-
 alter table public.projects enable row level security;
 
 drop policy if exists "projects: own rows" on public.projects;
 create policy "projects: own rows" on public.projects
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 -- Ignore writes older than what is stored (a stale device cannot overwrite a newer edit), stamp the
 -- server time, and cap the number of projects per user.
@@ -145,4 +144,11 @@ create trigger projects_guard
   before insert or update on public.projects
   for each row execute function public.projects_guard();
 
+revoke all on public.projects from anon;
 grant select, insert, update, delete on public.projects to authenticated;
+
+-- 5. Hardening -----------------------------------------------------------------------------------
+-- Trigger functions must not be callable through the REST API (triggers still fire).
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+revoke execute on function public.handle_user_updated() from public, anon, authenticated;
+revoke execute on function public.projects_guard() from public, anon, authenticated;

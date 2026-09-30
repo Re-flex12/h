@@ -1,5 +1,10 @@
 # Accounts setup (Supabase)
 
+> **Status:** connected to the Supabase project **PHYSENG** (`qrkvuplxknpwimzbgiru`, region ap-southeast-2 / Sydney).
+> `supabase/schema.sql` is applied (migrations `project_sync` and `harden_trigger_functions` on top of the original schema), and
+> `assets/js/config.js` holds the project URL and publishable key. The only step left is **Site URL / Redirect URLs** (step 2),
+> which needs the address where you host the site.
+
 Sign-up, sign-in, password reset, Terms acceptance and account deletion use [Supabase Auth](https://supabase.com/docs/guides/auth).
 Until `assets/js/config.js` is filled in, the site works as before, and the account button stays hidden.
 
@@ -27,7 +32,7 @@ Optionally raise the minimum password length to 8 (the site enforces 8 character
 Edit `assets/js/config.js`:
 ```js
 export const SUPABASE_URL = 'https://<project-ref>.supabase.co';
-export const SUPABASE_ANON_KEY = '<anon public key>';   // Project Settings → API
+export const SUPABASE_ANON_KEY = '<publishable key (sb_publishable_…) or legacy anon key>';   // Project Settings → API Keys
 export const LEGAL = { operator: '…', contactEmail: '…', jurisdiction: '…', hostingRegion: '…' };
 ```
 The anon key is designed to be public. Security comes from the RLS policies in `schema.sql`. **Never** put the `service_role` key in the site.
@@ -39,6 +44,9 @@ Then run `npm run build` if you ship the single-file `dist/physeng.html`. Sign-i
 - **Have the text reviewed by a lawyer for your jurisdiction before launch.** It's a sensible starting template, not legal advice.
 - Sign-up can't be submitted until the user ticks both *"I agree to the Terms of Service and Privacy Policy"* and *"I am 13 or older, or have a parent/guardian's permission"*. The accepted version and timestamp are stored in the user's metadata and in `public.profiles`, and the database rejects sign-ups without them.
 - **Changing the Terms**: edit the text, then bump `TERMS_VERSION` in `config.js`. Signed-in users on an older version see a prompt to accept the new version (or sign out), and the new acceptance is recorded.
+
+## Entry screen
+A signed-out visitor is shown a **Sign up / Log in** screen on arrival (`showEntry` in `assets/js/pages/account.js`). It has the same forms as `#/signup` and `#/signin`, including the Terms and age checkboxes, plus **Continue without an account**, which is remembered for 30 days. It doesn't appear over the Terms, Privacy or account pages, and the header **Log in** button reopens it.
 
 ## How it works
 | Flow | What happens |
