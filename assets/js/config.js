@@ -9,8 +9,8 @@ export const TERMS_VERSION = '2026-09-30';
 
 // Shown in the Terms of Service and Privacy Policy. Fill these in before launch.
 export const LEGAL = {
-  operator: '',          // Who runs the site, e.g. 'Jane Smith' or 'Example Ltd (company no. 12345678)'
-  contactEmail: '',      // Where users send privacy and account requests
-  jurisdiction: '',      // Governing law, e.g. 'England and Wales'
+  operator: 'Hamza Abdelwahab',
+  contactEmail: 'mabduallah74@gmail.com',
+  jurisdiction: 'the United Arab Emirates',
   hostingRegion: 'Asia-Pacific (Sydney)',   // Supabase project region
 };
