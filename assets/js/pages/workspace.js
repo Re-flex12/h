@@ -76,7 +76,7 @@ function prefs(pane) {
       <p class="small muted">Individual units can still be changed on every input and result.</p></div>
     <div class="panel"><h4>Backup & transfer</h4><p class="small muted mt">Export all projects, history and saved items as JSON, and import them on another device or browser.</p>
       <div class="btns"><button class="btn sm" id="ex">Export all data</button><label class="btn ghost sm">Import…<input type="file" id="im" accept=".json,application/json" hidden></label></div>
-      <div class="msg info mt">Roadmap: accounts with cross-device sync, team projects, calculation versioning and an API.</div></div></div>`;
+      <div class="msg info mt">Accounts with cross-device sync and team projects need a server and are not part of this static build. Use export/import (or a share link) to move projects between people and devices. Scripting: see the <a href="#/reference/api">JavaScript API</a>.</div></div></div>`;
   const sync = () => { document.getElementById('levelSel').value = settings.level; document.getElementById('unitSel').value = settings.units; document.documentElement.dataset.theme = settings.theme; };
   pane.querySelector('#pl').onchange = e => { setSetting('level', e.target.value); sync(); toast('Level updated'); };
   pane.querySelector('#pu').onchange = e => { setSetting('units', e.target.value); sync(); toast('Units updated'); };

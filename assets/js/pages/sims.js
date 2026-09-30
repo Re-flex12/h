@@ -2,6 +2,7 @@ import { esc, fmt } from '../core/format.js';
 import { crumbs, pageHead, linkTile, SIMS } from './common.js';
 import { hermite } from '../calcs/quantum.js';
 import * as S2 from './sims2.js';
+import { SIMS3 } from './sims3.js';
 
 export function index(main) {
   main.innerHTML = `${crumbs([['Tools', '#/tools'], ['Simulations']])}${pageHead('06 / TLS / SIM', 'Simulations', 'Drag things around instead of typing numbers. Every simulation integrates the real equations (RK4 where it matters) and shows the numbers behind the picture.')}
@@ -50,7 +51,7 @@ export function loop(fn) {
 }
 
 export function page(main, [id]) {
-  const f = { projectile, pendulum, 'double-slit': doubleSlit, wavefunction, minkowski, 'bh-orbit': bhOrbit, ...S2 }[id];
+  const f = { projectile, pendulum, 'double-slit': doubleSlit, wavefunction, minkowski, 'bh-orbit': bhOrbit, ...S2, ...SIMS3 }[id];
   if (!f) { main.innerHTML = 'Unknown simulation'; return; }
   return f(main);
 }

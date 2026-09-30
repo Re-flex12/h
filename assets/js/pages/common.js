@@ -21,6 +21,14 @@ export const SIMS = {
   orbitals: { title: 'Hydrogen Orbitals', sec: 'quantum', d: 'Exact ψ_nlm slices for n ≤ 5 with phase — s, p, d, f, g orbitals.' },
   lightclock: { title: 'Light Clock & Time Dilation', sec: 'quantum', d: 'The same photon clock seen from its rest frame and from the platform.' },
   gwaves: { title: 'Gravitational-Wave Chirp', sec: 'quantum', d: 'Binary inspiral: the frequency and amplitude sweep up to merger.' },
+  rlc: { title: 'AC Circuit — RLC Phasors', sec: 'physics', d: 'Series RLC driven by a sine source: rotating phasors, waveforms, phase and the resonance curve.' },
+  bfield: { title: 'Magnetic Fields of Currents', sec: 'physics', d: 'Drag current-carrying wires: field lines, |B| map and the force between wires.' },
+  flow: { title: 'Flow Past a Cylinder (Magnus Effect)', sec: 'physics', d: 'Potential flow with circulation: streamlines, tracer particles, surface pressure and Kutta–Joukowski lift.' },
+  gears: { title: 'Gear Train', sec: 'physics', d: 'Meshing spur gears with idler: speed, torque, direction and efficiency.' },
+  'stern-gerlach': { title: 'Stern–Gerlach Experiment', sec: 'quantum', d: 'Spin quantisation atom by atom — classical smear vs two spots, and sequential measurements at any angle.' },
+  lensing: { title: 'Gravitational Lensing', sec: 'quantum', d: 'Point-mass lens by inverse ray shooting: arcs, Einstein rings, magnification and microlensing light curves.' },
+  accretion: { title: 'Black-Hole Accretion Disk', sec: 'quantum', d: 'Thin-disk temperatures, ISCO vs spin, efficiency, Doppler beaming and gravitational redshift.' },
+  doppler: { title: 'Doppler Effect & Mach Cone', sec: 'physics', d: 'Moving source wavefronts: frequency shift ahead and behind, and the shock cone above Mach 1.' },
   universe: { title: 'Expanding Universe', sec: 'quantum', d: 'ΛCDM scale factor, stretching comoving grid and Hubble flow.' },
 };
 export const SOLVERS = {
