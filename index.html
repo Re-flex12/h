@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <link rel="stylesheet" href="assets/css/main.css">
+<script defer src="assets/vendor/supabase.js"></script>
 <script>
   // Apply saved theme before first paint to avoid a flash.
   try { var t = JSON.parse(localStorage.getItem('physeng.settings') || '{}').theme; if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -45,6 +46,7 @@
           <option value="imperial">Imperial</option>
         </select>
       </label>
+      <a class="ctl-btn acct-btn" id="acctBtn" href="#/signin" title="Sign in">Sign in</a>
       <button class="ctl-btn" id="themeBtn" aria-label="Toggle light/dark theme" title="Toggle theme">◐</button>
       <button class="ctl-btn menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">≡</button>
     </div>
@@ -72,7 +74,7 @@
     Every calculator states its equations, assumptions, limitations and data sources — check them, and verify
     safety-critical work against the governing standard and a qualified engineer.
   </div>
-  <div class="foot-links"><a href="#/content-map">Full content map</a> · <a href="#/about">Method &amp; reliability</a> · <a href="#/reference/standards">Standards guide</a></div>
+  <div class="foot-links"><a href="#/content-map">Full content map</a> · <a href="#/about">Method &amp; reliability</a> · <a href="#/reference/standards">Standards guide</a> · <a href="#/terms">Terms of Service</a> · <a href="#/privacy">Privacy Policy</a></div>
 </footer>
 
 <div class="palette" id="palette" hidden>

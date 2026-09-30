@@ -15,11 +15,15 @@ import * as topics from './pages/topics.js';
 import * as ws from './pages/workspace.js';
 import * as tools2 from './pages/tools2.js';
 import * as practice from './pages/practice.js';
+import * as account from './pages/account.js';
+import * as legal from './pages/legal.js';
+import * as auth from './core/auth.js';
 import { PHYSENG } from './api.js';
 window.PHYSENG = PHYSENG;
 
 const ROUTES = [
   [/^$/, sections.home, ''],
+  [/^signin$/, account.signin, ''], [/^signup$/, account.signup, ''], [/^forgot-password$/, account.forgot, ''], [/^reset-password$/, account.resetPassword, ''], [/^account$/, account.account, ''], [/^terms$/, legal.terms, ''], [/^privacy$/, legal.privacy, ''],
   [/^learn$/, learn.index, 'learn'], [/^topics$/, topics.index, 'learn'], [/^topic\/([\w-]+)$/, topics.topic, 'learn'], [/^learn\/practice$/, practice.page, 'learn'], [/^learn\/labs$/, labs.index, 'learn'], [/^learn\/labs\/([\w-]+)$/, labs.lab, 'learn'], [/^learn\/([\w-]+)$/, learn.lesson, 'learn'],
   [/^physics$/, sections.physics, 'physics'],
   [/^quantum$/, sections.quantum, 'quantum'], [/^quantum\/circuit$/, tools2.quantumCircuit, 'quantum'],
@@ -100,7 +104,24 @@ function initControls() {
   unm.onchange = () => { un.value = unm.value; un.onchange(); };
 }
 
+// Header account button reflects the signed-in user; users on an old Terms version are asked to accept the new one.
+function initAccount() {
+  const btn = document.getElementById('acctBtn');
+  const paint = (st) => {
+    if (!auth.configured()) { btn.hidden = true; return; }
+    btn.hidden = false;
+    if (st.user) { const n = st.user.user_metadata?.display_name || st.user.email || 'Account'; btn.textContent = n.slice(0, 1).toUpperCase(); btn.title = `Account — ${n}`; btn.href = '#/account'; btn.classList.add('on'); account.showTermsPrompt(); }
+    else { btn.textContent = 'Sign in'; btn.title = 'Sign in'; btn.href = '#/signin'; btn.classList.remove('on'); document.getElementById('termsModal')?.remove(); }
+  };
+  auth.onAuth(paint);
+  let prev = null;
+  auth.onAuth(st => { const id = st.user?.id || null; if (st.ready && id !== prev) { const was = prev; prev = id; if (was !== null || id !== null) { const p = location.hash; if (/^#\/(account|signin|signup|reset-password)/.test(p)) route(); } } });
+  // The Supabase script loads with `defer`; start once it is present.
+  (function wait(n = 0) { if (window.supabase || !auth.configured() || n > 50) auth.initAuth(); else setTimeout(() => wait(n + 1), 100); })();
+}
+
 initControls();
+initAccount();
 initSearch();
 window.addEventListener('hashchange', route);
 route();

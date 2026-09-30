@@ -459,3 +459,15 @@ canvas.sim { width: 100%; display: block; background: var(--bg2); border: 1px so
 #supT, #ldT, #tN, #tM, #tSL { overflow-x: auto; }
 .tbl .in { min-width: 0; }
 [hidden]{display:none!important}
+/* Accounts & legal */
+.acct-btn { width: auto; min-width: 34px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; font: 600 12px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
+.acct-btn.on { background: var(--acc); color: var(--bg); border-color: var(--acc); border-radius: 50%; width: 34px; padding: 0; font-size: 14px; }
+.auth-card { max-width: 460px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; }
+.check input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--acc); flex: none; }
+.legal { max-width: 760px; }
+.legal section { margin: 22px 0; }
+.legal h2 { font-size: 20px; margin: 0 0 8px; }
+.legal p, .legal li { line-height: 1.6; }
+.legal mark { background: var(--warn); color: #000; padding: 0 4px; }
+.btn:disabled, .btn[disabled] { opacity: .45; cursor: not-allowed; filter: grayscale(.6); }

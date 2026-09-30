@@ -24,6 +24,7 @@ npm install && npm run build   # → dist/physeng.html — the whole site in ONE
 | **Tools** | Unit converter, equation solver, graphing, CSV data analysis/regression, uncertainty propagation (GUM + Monte Carlo), dimensional analysis, FFT, matrix calculator, numerical methods, psychrometric chart, quantum circuits, and "Ask" (plain-English questions routed to the right calculator). |
 | **Learn** | 23 lessons, 61 topic guides (depth adapts to School / University / Professional), 12 **lab guides** with a live data table, least-squares fit and uncertainty, 6 timed **exam-style papers** (GCSE, A-level, IB, university) with mark schemes, a question bank, formula drills, timed quizzes, flashcards and progress tracking. |
 | **Workspace** | Projects, calculation history with **revisions and diffs**, favourites, notes, project summaries, JSON import/export (stored in the browser). |
+| **Accounts** | Optional sign-up and sign-in with Supabase Auth: email confirmation, password reset, profile (name, role), Terms of Service and Privacy Policy acceptance recorded per version (with a re-acceptance prompt when they change), and self-service account deletion. Setup: [SUPABASE.md](SUPABASE.md). |
 | **Search** | Global search (`/` or Ctrl+K). It also recognises typed equations such as `E=mc2`, `PV=nRT` or `FL^3/48EI`. |
 | **Topic guides** | 61 explainers for core physics (motion, forces, rotation, gravity, electricity, magnetism, waves, thermal, nuclear) and maths (arithmetic to vector calculus, Laplace transforms and hypothesis testing), each with key equations, a worked example, a self-check and linked tools. |
 | **Content map** | 706 topics; every one links to a live lesson, topic guide, calculator, simulation, solver or reference page. |
@@ -41,7 +42,10 @@ npm install && npm run build   # → dist/physeng.html — the whole site in ONE
 ```
 index.html                 app shell
 assets/css/main.css        design system (dark "oscilloscope" / light "blueprint")
-assets/js/app.js           router, settings
+assets/js/app.js           router, settings, account button
+assets/js/config.js        Supabase URL/anon key, Terms version, legal details
+assets/vendor/supabase.js  supabase-js UMD build (MIT)
+supabase/schema.sql        profiles table, RLS, Terms-enforcing sign-up trigger, delete_user()
 assets/js/api.js           window.PHYSENG scripting API
 assets/js/search.js        global search and equation recognition
 assets/js/core/            units, expression parser/solver, numerics, plotting, storage, formatting
@@ -55,4 +59,4 @@ tests/                     node:test suites
 
 ## Coming next
 
-Accounts, cross-device sync and team projects (server-backed). Until then, projects move between people and devices through JSON export/import or share links.
+Cross-device sync of projects and history to the signed-in account, and team projects. Until then, projects move between people and devices through JSON export/import or share links.

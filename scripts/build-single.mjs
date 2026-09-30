@@ -30,6 +30,7 @@ let html = r('index.html');
 const swap = (re, rep, what) => { if (!re.test(html)) throw new Error(`build-single: could not find ${what} in index.html`); html = html.replace(re, () => rep); };
 swap(/<link rel="stylesheet" href="https:\/\/cdn\.jsdelivr\.net\/npm\/katex[^>]*>/, `<style>${styleSafe(kcss)}</style>`, 'KaTeX CSS link');
 swap(/<script defer src="https:\/\/cdn\.jsdelivr\.net\/npm\/katex[^>]*><\/script>/, `<script>${scriptSafe(kjs)}</script>`, 'KaTeX script');
+swap(/<script defer src="assets\/vendor\/supabase\.js"><\/script>/, `<script>${scriptSafe(r('assets/vendor/supabase.js'))}</script>`, 'Supabase script');
 swap(/<link rel="stylesheet" href="assets\/css\/main\.css">/, `<style>${styleSafe(r('assets/css/main.css'))}</style>`, 'site CSS link');
 swap(/<script type="module" src="assets\/js\/app\.js"><\/script>/, `<script>${scriptSafe(js)}</script>`, 'app script');
 
