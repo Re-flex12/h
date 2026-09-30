@@ -23,7 +23,7 @@ Until `assets/js/config.js` is filled in, the site works as before, and the acco
 - **Redirect URLs**: add the same URL plus `…/?reset=1` (password reset), e.g. `https://physeng.example.com/**`.
   For local testing, also add `http://localhost:8080/**`.
 
-**Authentication → Providers → Email**: enabled. Keep **Confirm email** on (recommended).
+**Authentication → Sign In / Providers → Email**: enabled. **Confirm email is OFF** for this site (owner's choice): sign-up logs the user in straight away. (Turning it back on works too — the site then shows "check your email" after sign-up.)
 Optionally raise the minimum password length to 8 (the site enforces 8 characters with letters and numbers).
 
 **Authentication → Emails**: the default templates work. Before launch, set up custom SMTP (Project Settings → Auth → SMTP), because Supabase's built-in email is rate-limited and meant for testing.
@@ -51,7 +51,7 @@ A signed-out visitor is shown a **Sign up / Log in** screen on arrival (`showEnt
 ## How it works
 | Flow | What happens |
 |---|---|
-| Sign up | `auth.signUp` with Terms metadata → confirmation email → link returns to the site (`?code=…`, PKCE) → signed in → `#/account` |
+| Sign up | `auth.signUp` with Terms metadata → signed in immediately (Confirm email off). If confirmation is switched on: email → link returns to the site (`?code=…`, PKCE) → signed in |
 | Sign in / out | `signInWithPassword` / `signOut`; the session is kept in localStorage and refreshed automatically |
 | Forgot password | `resetPasswordForEmail` → link returns with `?reset=1&code=…` → `#/reset-password` → `updateUser({ password })` |
 | Project sync | On sign-in, after each change (1.5 s debounce), on window focus or reconnect, and every minute: fetch row metadata → download newer server copies → upload newer local copies and deletion markers. Signing out flushes first, then removes that account's copies from the browser; if the flush failed, they're kept as local-only projects so nothing is lost. |
