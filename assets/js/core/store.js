@@ -49,6 +49,27 @@ export function addToProject(projectId, item) {
   saveProjects(p);
   return true;
 }
+// Calculation versioning: replace an item's state and keep the previous state in item.versions (newest first).
+const SNAP = ['inputs', 'units', 'mode', 'result', 'note', 'at', 'rev', 'state'];
+const snap = it => Object.fromEntries(SNAP.filter(k => it[k] !== undefined).map(k => [k, it[k]]));
+export function saveVersion(projectId, itemId, data) {
+  const p = getProjects(), proj = p.find(x => x.id === projectId), it = proj?.items.find(i => i.id === itemId);
+  if (!it) return false;
+  it.versions = [snap({ ...it, rev: it.rev || 1 }), ...(it.versions || [])].slice(0, 50);
+  Object.assign(it, data, { at: new Date().toISOString(), rev: (it.rev || 1) + 1 });
+  saveProjects(p);
+  return it.rev;
+}
+export function restoreVersion(projectId, itemId, idx) {
+  const p = getProjects(), proj = p.find(x => x.id === projectId), it = proj?.items.find(i => i.id === itemId);
+  const v = it?.versions?.[idx];
+  if (!v) return false;
+  const { rev, at, ...state } = v;
+  it.versions = [snap({ ...it, rev: it.rev || 1 }), ...it.versions];
+  Object.assign(it, state, { at: new Date().toISOString(), rev: (it.rev || 1) + 1, note: `${state.note || ''} (restored from rev ${rev})`.trim() });
+  saveProjects(p);
+  return true;
+}
 export function removeFromProject(projectId, itemId) {
   const p = getProjects();
   const proj = p.find(x => x.id === projectId);

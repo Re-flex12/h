@@ -1,4 +1,4 @@
-import { settings, setSetting, getHistory, clearHistory, getProjects, createProject, deleteProject, updateProject, removeFromProject, getFavs, toggleFav, exportAll, importAll } from '../core/store.js';
+import { settings, setSetting, getHistory, clearHistory, getProjects, createProject, deleteProject, updateProject, removeFromProject, restoreVersion, getFavs, toggleFav, exportAll, importAll } from '../core/store.js';
 import { CALC } from '../calcs/index.js';
 import { EQ } from '../data/equations.js';
 import { getMaterial } from '../data/materials.js';
@@ -12,6 +12,17 @@ const itemHref = it => {
   if (it.kind === 'truss') return `#/solvers/truss?s=${encodeState(it.state)}`;
   return '#/workspace';
 };
+// Input differences between two saved states of the same calculator, as readable text.
+const diffInputs = (calcId, a = {}, b = {}) => {
+  const c = CALC[calcId];
+  const label = k => c?.inputs.find(i => i.k === k)?.label || k;
+  const show = v => typeof v === 'number' ? (Math.abs(v) >= 1e4 || (Math.abs(v) < 1e-3 && v) ? v.toExponential(4) : String(+v.toPrecision(6))) : String(v);
+  return [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(k => String(a[k]) !== String(b[k])).map(k => `${label(k)}: ${show(a[k])} → ${show(b[k])}`);
+};
+const versionsHtml = it => !it.versions?.length ? '' : `<details class="mt"><summary class="small">Revision history (${it.versions.length} earlier)</summary><div class="rows">${it.versions.map((v, j) => {
+  const newer = j === 0 ? it : it.versions[j - 1], d = diffInputs(it.calc, v.inputs, newer.inputs);
+  return `<div class="row"><span class="ri">r${v.rev || 1}</span><span><a href="${itemHref({ ...it, ...v })}" class="rt" style="text-decoration:none">Open rev ${v.rev || 1}</a>${v.note ? ` <span class="muted small">— ${esc(v.note)}</span>` : ''}<div class="small muted">${esc(v.result || '')}</div>${d.length ? `<div class="small">Changed in r${newer.rev || 1}: ${esc(d.join('; '))}</div>` : ''}</span><span class="rd">${when(v.at)} <button class="btn ghost sm" data-restore="${it.id}:${j}">Restore</button></span></div>`;
+}).join('')}</div></details>`;
 const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
 export function page(main, _, query) {
@@ -30,7 +41,7 @@ function projects(pane) {
     ${ps.length ? ps.map(p => `<div class="panel tick mb" data-p="${p.id}">
       <div class="panel-title"><div><input class="plain" data-name value="${esc(p.name)}" style="font-weight:700;font-size:18px;border-color:transparent;padding:4px 0;background:transparent"><div class="small muted mono">Created ${when(p.created)} · ${p.items.length} item${p.items.length === 1 ? '' : 's'}</div></div>
       <div class="btns"><button class="btn ghost sm" data-exp>Export JSON</button><button class="btn ghost sm" data-print>Project summary</button><button class="btn danger sm" data-del>Delete</button></div></div>
-      ${p.items.length ? `<div class="rows">${p.items.map((it, i) => `<div class="row"><span class="ri">${String(i + 1).padStart(2, '0')}</span><span><a href="${itemHref(it)}" class="rt" style="text-decoration:none">${esc(it.title)}</a>${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}<div class="small muted">${esc(it.result || '')}</div></span><span class="rd">${when(it.at)} <button class="btn ghost sm" data-rm="${it.id}">✕</button></span></div>`).join('')}</div>` : '<div class="empty">No items yet — open any calculator or solver and press “Save to project”.</div>'}
+      ${p.items.length ? `<div class="rows">${p.items.map((it, i) => `<div class="row"><span class="ri">${String(i + 1).padStart(2, '0')}</span><span><a href="${itemHref(it)}" class="rt" style="text-decoration:none">${esc(it.title)}</a>${it.rev > 1 ? ` <span class="badge">rev ${it.rev}</span>` : ''}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}<div class="small muted">${esc(it.result || '')}</div>${versionsHtml(it)}</span><span class="rd">${when(it.at)} <button class="btn ghost sm" data-rm="${it.id}">✕</button></span></div>`).join('')}</div>` : '<div class="empty">No items yet — open any calculator or solver and press “Save to project”.</div>'}
       <div class="field mt"><label>Project notes</label><textarea class="plain" data-notes style="min-height:80px" placeholder="Requirements, decisions, open questions…">${esc(p.notes || '')}</textarea></div>
     </div>`).join('') : '<div class="empty">No projects yet. Create one above — e.g. a Formula Student suspension, a pump system or a lab report.</div>'}`;
   pane.querySelector('#npb').onclick = () => { const n = pane.querySelector('#np').value.trim(); if (!n) return; createProject(n); projects(pane); toast('Project created'); };
@@ -40,6 +51,7 @@ function projects(pane) {
     el.querySelector('[data-notes]').oninput = debounce(e => updateProject(id, { notes: e.target.value }), 400);
     el.querySelector('[data-del]').onclick = () => { if (confirm(`Delete project “${p.name}”? This cannot be undone.`)) { deleteProject(id); projects(pane); } };
     el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { removeFromProject(id, b.dataset.rm); projects(pane); });
+    el.querySelectorAll('[data-restore]').forEach(b => b.onclick = () => { const [iid, j] = b.dataset.restore.split(':'); restoreVersion(id, iid, +j); projects(pane); toast('Earlier revision restored as a new revision'); });
     el.querySelector('[data-exp]').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' })); a.download = `${p.name.replace(/[^\w-]+/g, '_')}.physeng.json`; a.click(); };
     el.querySelector('[data-print]').onclick = () => {
       const w = window.open('', '_blank');

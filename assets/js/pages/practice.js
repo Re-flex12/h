@@ -1,5 +1,6 @@
 // Practice: question bank, auto-generated formula drills, timed quiz and equation flashcards.
 import { LESSONS } from '../data/lessons.js';
+import { PAPERS, PAPER, paperMarks } from '../data/papers.js';
 import { EQUATIONS, EQ } from '../data/equations.js';
 import { compile, solveRoot } from '../core/expr.js';
 import { DIMS, fromSI, defaultUnit, toSI } from '../core/units.js';
@@ -7,7 +8,7 @@ import { fmt, esc, T, renderTex } from '../core/format.js';
 import { settings } from '../core/store.js';
 import { crumbs, pageHead, richText, LEVEL_NAME } from './common.js';
 
-const PKEY = 'physeng.progress', FKEY = 'physeng.flash';
+const PKEY = 'physeng.progress', FKEY = 'physeng.flash', AKEY = 'physeng.papers';
 const rd = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
 const wr = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } };
 
@@ -57,10 +58,44 @@ export function page(main, _, query) {
   const tab = query.get('t') || 'bank';
   const prog = rd(PKEY, {});
   main.innerHTML = `${crumbs([['Learn', '#/learn'], ['Practice']])}${pageHead('01 / LEARN / PRACTICE', 'Practice', `Question bank (${BANK.length} worked questions, ${Object.keys(prog).length} answered correctly), unlimited formula drills generated from the equation library, timed quizzes and equation flashcards.`)}
-    <div class="tabs" style="margin-top:0">${[['bank', 'Question bank'], ['drill', 'Formula drills'], ['quiz', 'Timed quiz'], ['flash', 'Flashcards'], ['progress', 'Progress']].map(([k, n]) => `<button data-t="${k}" class="${k === tab ? 'on' : ''}">${n}</button>`).join('')}</div><div id="pp" class="mt"></div>`;
+    <div class="tabs" style="margin-top:0">${[['bank', 'Question bank'], ['papers', 'Past-paper style'], ['drill', 'Formula drills'], ['quiz', 'Timed quiz'], ['flash', 'Flashcards'], ['progress', 'Progress']].map(([k, n]) => `<button data-t="${k}" class="${k === tab ? 'on' : ''}">${n}</button>`).join('')}</div><div id="pp" class="mt"></div>`;
   const pane = main.querySelector('#pp');
   let quizTimer = null;
   const V = {
+    papers() {
+      const att = rd(AKEY, []);
+      const best = id => { const a = att.filter(x => x.id === id); return a.length ? Math.max(...a.map(x => x.pct)) : null; };
+      pane.innerHTML = `<p class="muted">Timed, structured papers with mark schemes, written in the style of common exam boards. They are original practice questions — not reproductions of official past papers. Numerical answers are marked automatically (±2 %); read the mark scheme to see where method marks come from.</p>
+        <div class="grid auto">${PAPERS.map(p => `<button class="tile" data-paper="${p.id}" style="text-align:left"><span class="k"><span>${esc(p.style)}</span><span>${p.mins} min · ${paperMarks(p)} marks</span></span><span class="t">${esc(p.title)}</span><span class="d">${p.questions.length} questions · ${LEVEL_NAME[p.level]}${best(p.id) != null ? ` · best ${best(p.id).toFixed(0)} %` : ''}</span><span class="go">Start paper →</span></button>`).join('')}</div>`;
+      pane.querySelectorAll('[data-paper]').forEach(b => b.onclick = () => sit(PAPER[b.dataset.paper]));
+      const sit = (P) => {
+        const total = paperMarks(P);
+        let left = P.mins * 60, done = false;
+        pane.innerHTML = `<div class="toolbar"><b>${esc(P.style)} · ${esc(P.title)}</b><span class="muted">${total} marks</span><span class="mono" id="clock" style="font-size:20px">${P.mins}:00</span><button class="btn ghost sm" id="quit">← All papers</button></div>
+          <div class="msg info">${esc(P.info)} Answer every part, then press “Finish & mark”. The clock is a guide — marking still works after time runs out.</div>
+          ${P.questions.map((q, i) => `<div class="q"><div class="qn">Question ${i + 1} · ${q.parts.reduce((a, x) => a + x.marks, 0)} marks</div><p>${esc(q.stem)}</p>${q.parts.map((x, j) => `<div class="mt" data-part="${i}:${j}"><p><b>(${String.fromCharCode(97 + j)})</b> ${esc(x.q)} <span class="muted">[${x.marks}]</span></p><div class="in" style="max-width:360px"><input inputmode="decimal" placeholder="Answer"><span class="unit-fixed">${esc(x.unit)}</span></div><div class="res"></div></div>`).join('')}</div>`).join('')}
+          <button class="btn" id="finish">Finish & mark</button><div id="score" class="mt"></div>`;
+        pane.querySelector('#quit').onclick = () => { clearInterval(quizTimer); V.papers(); };
+        const finish = () => {
+          if (done) return; done = true; clearInterval(quizTimer);
+          let got = 0;
+          P.questions.forEach((q, i) => q.parts.forEach((x, j) => {
+            const el = pane.querySelector(`[data-part="${i}:${j}"]`), v = Number(el.querySelector('input').value.replace(',', '.'));
+            const ok = el.querySelector('input').value.trim() !== '' && Number.isFinite(v) && Math.abs(v - x.ans) <= x.tol * Math.abs(x.ans);
+            if (ok) got += x.marks;
+            el.querySelector('input').disabled = true;
+            el.querySelector('.res').innerHTML = `${ok ? `<span class="ok">✓ ${x.marks}/${x.marks}</span>` : `<span class="no">✗ 0/${x.marks}</span> — answer ${fmt(x.ans, 3)} ${esc(x.unit)}`}<div class="small muted">Mark scheme: ${esc(x.scheme)}</div>`;
+          }));
+          const pct = got / total * 100, band = pct >= 80 ? 'A*/A (7–9)' : pct >= 70 ? 'A/B (6–7)' : pct >= 60 ? 'B/C (5–6)' : pct >= 50 ? 'C/D (4–5)' : 'below C (< 4)';
+          const a = rd(AKEY, []); a.unshift({ id: P.id, at: Date.now(), got, total, pct }); wr(AKEY, a.slice(0, 100));
+          pane.querySelector('#score').innerHTML = `<div class="readout primary"><div class="rl">Score</div><div class="rv"><span class="val">${got} / ${total}</span> <span class="muted">(${pct.toFixed(0)} %)</span></div></div><p class="small muted">Indicative band: ${band}. Bands are rough guides only; real grade boundaries vary by paper and year. Answers marked wrong can still earn method marks in a real exam — compare your working with the mark scheme.</p>`;
+          pane.querySelector('#finish').disabled = true;
+        };
+        pane.querySelector('#finish').onclick = finish;
+        clearInterval(quizTimer);
+        quizTimer = setInterval(() => { left--; const c = pane.querySelector('#clock'); if (!c) { clearInterval(quizTimer); return; } c.textContent = left >= 0 ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : 'time'; c.style.color = left < 60 ? 'var(--bad)' : ''; if (left <= 0) clearInterval(quizTimer); }, 1000);
+      };
+    },
     bank() {
       const secs = [['all', 'All'], ['physics', 'Physics'], ['engineering', 'Engineering'], ['quantum', 'Quantum & Relativity']];
       pane.innerHTML = `<div class="toolbar"><div class="chips" id="sec">${secs.map(([k, n], i) => `<button class="chip${i ? '' : ' on'}" data-s="${k}">${n}</button>`).join('')}</div><div class="chips" id="lv">${['all', 'school', 'uni', 'pro'].map((k, i) => `<button class="chip${i ? '' : ' on'}" data-l="${k}">${k === 'all' ? 'All levels' : LEVEL_NAME[k]}</button>`).join('')}</div><label class="chip"><input type="checkbox" id="un"> unanswered only</label></div><div id="ql"></div>`;

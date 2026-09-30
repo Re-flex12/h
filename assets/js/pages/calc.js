@@ -4,7 +4,7 @@ import { DIMS, defaultUnit, toSI, fromSI, siUnit, unitsOf } from '../core/units.
 import { fmt, num, esc, T, tex, toast, debounce, renderTex } from '../core/format.js';
 import { compile } from '../core/expr.js';
 import { plotSVG, legend } from '../core/plot.js';
-import { settings, pushHistory, getProjects, createProject, addToProject, toggleFav, isFav } from '../core/store.js';
+import { settings, pushHistory, getProjects, createProject, addToProject, saveVersion, toggleFav, isFav } from '../core/store.js';
 import { VALIDATION } from '../data/validation.js';
 import { EQ } from '../data/equations.js';
 import { LESSON } from '../data/lessons.js';
@@ -252,14 +252,28 @@ export function page(main, [id], query) {
     const box = main.querySelector('#saveBox');
     const projects = getProjects();
     box.hidden = !box.hidden;
-    box.innerHTML = `<div class="toolbar" style="margin:0"><h4>Save to project</h4><select class="plain" id="pSel" style="max-width:280px">${projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}<option value="__new">+ New project…</option></select><input class="plain" id="pNew" placeholder="New project name" style="max-width:260px" ${projects.length ? 'hidden' : ''}><input class="plain" id="pNote" placeholder="Note (e.g. 'Rear axle, rev B')" style="max-width:300px"><button class="btn sm" id="pGo">Save</button></div>`;
-    const sel = box.querySelector('#pSel'), nw = box.querySelector('#pNew');
+    box.innerHTML = `<div class="toolbar" style="margin:0"><h4>Save to project</h4><select class="plain" id="pSel" style="max-width:280px">${projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}<option value="__new">+ New project…</option></select><input class="plain" id="pNew" placeholder="New project name" style="max-width:260px" ${projects.length ? 'hidden' : ''}><select class="plain" id="pAs" style="max-width:300px" hidden></select><input class="plain" id="pNote" placeholder="Note (e.g. 'Rear axle, rev B')" style="max-width:300px"><button class="btn sm" id="pGo">Save</button></div>`;
+    const sel = box.querySelector('#pSel'), nw = box.querySelector('#pNew'), as = box.querySelector('#pAs');
     if (!projects.length) sel.value = '__new';
-    sel.onchange = () => { nw.hidden = sel.value !== '__new'; };
+    const fillAs = () => {
+      const pr = projects.find(p => p.id === sel.value), same = pr ? pr.items.filter(it => it.kind === 'calc' && it.calc === id) : [];
+      as.innerHTML = `<option value="">Save as a new item</option>${same.map(it => `<option value="${it.id}">New version of: ${esc(it.note || it.title)} (rev ${it.rev || 1})</option>`).join('')}`;
+      as.hidden = !same.length;
+    };
+    sel.onchange = () => { nw.hidden = sel.value !== '__new'; fillAs(); };
+    fillAs();
     box.querySelector('#pGo').onclick = () => {
       let pid = sel.value;
       if (pid === '__new') { const name = nw.value.trim() || 'Untitled project'; pid = createProject(name).id; }
-      addToProject(pid, { kind: 'calc', calc: id, title: c.title, note: box.querySelector('#pNote').value, inputs: { ...st.v }, units: { ...st.u }, mode: st.mode, result: primarySummary() });
+      const data = { kind: 'calc', calc: id, title: c.title, note: box.querySelector('#pNote').value, inputs: { ...st.v }, units: { ...st.u }, mode: st.mode, result: primarySummary() };
+      if (as.value && !as.hidden) {
+        const prev = projects.find(p => p.id === pid)?.items.find(it => it.id === as.value);
+        const rev = saveVersion(pid, as.value, { ...data, note: data.note || prev?.note || '' });
+        box.hidden = true;
+        toast(`Saved as revision ${rev}`);
+        return;
+      }
+      addToProject(pid, data);
       box.hidden = true;
       toast('Saved to project');
     };

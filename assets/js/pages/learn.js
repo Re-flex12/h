@@ -1,4 +1,5 @@
 import { LESSONS, LESSON } from '../data/lessons.js';
+import { LABS } from '../data/labs.js';
 import { CALC } from '../calcs/index.js';
 import { EQ } from '../data/equations.js';
 import { esc, T, renderTex } from '../core/format.js';
@@ -24,8 +25,9 @@ export function index(main) {
       const done = l.questions.filter((_, i) => prog[`${l.id}:${i}`]).length;
       return `<a class="tile${k === 'quantum' ? ' qr' : ''}" href="#/learn/${l.id}"><span class="k"><span>${esc(l.topic)}</span><span>${l.levels.map(levelBadge).join(' ')}</span></span><span class="t">${esc(l.title)}</span><span class="d">${esc(l.intro)}</span><span class="go">${done}/${l.questions.length} questions · Learn →</span></a>`;
     }).join('')}</div>`).join('')}
-    <div class="sec-head"><h2>Practice</h2></div><div class="grid g4">${[['bank', 'Question bank', 'Every lesson question with hints and worked solutions.'], ['drill', 'Formula drills', 'Unlimited numeric questions generated from the equation library.'], ['quiz', 'Timed quiz', 'Mixed questions against the clock, marked instantly.'], ['flash', 'Flashcards', 'Spaced-repetition equation cards.']].map(([t, n, d]) => linkTile(`#/learn/practice?t=${t}`, 'Practice', n, d, 'Start →')).join('')}</div>
-    <div class="msg info mt2">Levels map to curricula: <b>School</b> (GCSE/IGCSE, A-Level/IAL, IB), <b>University</b> (Year 1–2+), <b>Professional</b> (design practice). Exam-board-specific question sets are on the roadmap.</div>`;
+    <div class="sec-head"><h2>Lab guides</h2><a class="btn ghost sm" href="#/learn/labs">All labs →</a></div><div class="grid auto">${LABS.slice(0, 4).map(l => linkTile(`#/learn/labs/${l.id}`, `Lab · ~${l.mins} min`, l.title, l.aim, 'Open lab →')).join('')}</div>
+    <div class="sec-head"><h2>Practice</h2></div><div class="grid auto">${[['bank', 'Question bank', 'Every lesson question with hints and worked solutions.'], ['papers', 'Exam-style papers', 'Timed structured papers with mark schemes (GCSE → university).'], ['drill', 'Formula drills', 'Unlimited numeric questions generated from the equation library.'], ['quiz', 'Timed quiz', 'Mixed questions against the clock, marked instantly.'], ['flash', 'Flashcards', 'Spaced-repetition equation cards.']].map(([t, n, d]) => linkTile(`#/learn/practice?t=${t}`, 'Practice', n, d, 'Start →')).join('')}</div>
+    <div class="msg info mt2">Levels map to curricula: <b>School</b> (GCSE/IGCSE, A-Level/IAL, IB), <b>University</b> (Year 1–2+), <b>Professional</b> (design practice). Timed <a href="#/learn/practice?t=papers">past-paper-style papers</a> (GCSE, A-level, IB and first-year university style) have mark schemes.</div>`;
 }
 
 export function lesson(main, [id]) {
