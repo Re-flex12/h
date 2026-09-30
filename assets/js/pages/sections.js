@@ -1,3 +1,4 @@
+import { TOPICS } from '../data/topics.js';
 import { esc, fmt, T } from '../core/format.js';
 import { settings } from '../core/store.js';
 import { CALCS, CALC, DISCIPLINES } from '../calcs/index.js';
@@ -74,7 +75,7 @@ export function home(main) {
     <a href="#/physics"><code>PHY</code><b>Physics</b><span>Mechanics → nuclear</span></a><a href="#/maths"><code>MTH</code><b>Mathematics</b><span>Algebra → numerics</span></a></div>
 
   <div class="mt2 qr-band">
-    <div><span class="code">SEPARATE SECTION · Q&amp;R</span><h2 style="margin:8px 0 10px">Quantum &amp; Relativity</h2><p class="muted">Its own top-level area — not a “modern physics” footnote. Quantum mechanics, atomic physics, quantum information, special and general relativity, black holes, gravitational waves, cosmology, particle physics and QFT.</p>
+    <div><span class="code">SEPARATE SECTION · Q&amp;R</span><h2 style="margin:8px 0 10px">Quantum &amp; Relativity</h2><p class="muted">Its own top-level area — not a “modern physics” footnote. Quantum mechanics, atomic physics, quantum information, special and general relativity, black holes, gravitational waves, cosmology and particle physics.</p>
     <div class="btns"><a class="btn" style="background:var(--qr);border-color:var(--qr)" href="#/quantum">Enter Quantum &amp; Relativity →</a><a class="btn ghost" href="#/sims/minkowski">Minkowski diagram</a><a class="btn ghost" href="#/sims/bh-orbit">Black-hole orbits</a></div></div>
     <div class="rows">${['black-hole', 'lorentz', 'tunnel', 'hydrogen', 'cosmology', 'gps'].map((id, i) => `<a href="#/calc/${id}"><span class="ri">Q${String(i + 1).padStart(2, '0')}</span><span class="rt">${esc(CALC[id].title)}</span><span class="rd">${CALC[id].sub || ''}</span></a>`).join('')}</div>
   </div>
@@ -96,6 +97,7 @@ export function physics(main) {
   main.innerHTML = `${crumbs([['Physics']])}${pageHead('02 / PHY', 'Physics', esc(PHYSICS.blurb))}
     <div class="toc">${PHYSICS.groups.map(g => `<a class="chip" href="#/physics#g-${g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">${esc(g.name)}</a>`).join('')}<a class="chip" href="#/quantum" style="border-color:var(--qr);color:var(--qr)">Quantum &amp; Relativity →</a></div>
     <div class="sec-head"><h2>Calculators</h2></div><div class="grid auto">${CALCS.filter(c => DISCIPLINES[c.disc]?.section === 'physics').map(calcTile).join('')}</div>
+    <div class="sec-head"><h2>Topic guides</h2><a class="btn ghost sm" href="#/topics">All topic guides →</a></div><div class="grid auto">${TOPICS.filter(t => t.sec === 'physics').slice(0, 8).map(t => linkTile(`#/topic/${t.id}`, t.group, t.title, t.summary.split('. ')[0] + '.', 'Read →')).join('')}</div>
     <div class="sec-head"><h2>Lessons &amp; simulations</h2></div><div class="grid auto">${LESSONS.filter(l => l.section === 'physics').map(l => linkTile(`#/learn/${l.id}`, `Learn · ${l.topic}`, l.title, l.intro, 'Learn →')).join('')}${['projectile', 'pendulum'].map(id => linkTile(`#/sims/${id}`, 'Simulation', SIMS[id].title, SIMS[id].d, 'Run →')).join('')}</div>
     <div class="sec-head"><h2>Topic map</h2><span class="muted small">Linked topics open a live lesson, calculator, equation or simulation</span></div>${taxGroups(PHYSICS.groups)}`;
 }
@@ -137,6 +139,7 @@ export function maths(main) {
   main.innerHTML = `${crumbs([['Mathematics']])}${pageHead('05 / MTH', 'Mathematics', esc(MATHS.blurb))}
     <div class="grid g4">${[['solver', 'Equation Solver', 'Solve any equation for any variable.'], ['matrix', 'Matrix Tool', 'Determinants, inverses, eigenvalues, Ax = b.'], ['numerics', 'Numerical Methods Lab', 'Roots, integration, differentiation, ODEs.'], ['graph', 'Graphing', 'Functions, data, log axes, regression.'], ['data', 'Data Analysis', 'Statistics and least squares.'], ['uncertainty', 'Uncertainty', 'Error propagation, Monte Carlo.'], ['fft', 'Signal Analysis', 'FFT spectra, windows, THD.'], ['dimensions', 'Dimensional Analysis', 'Check any equation.']].map(([id, t, dd]) => linkTile(toolHref(id), 'Tool', t, dd, 'Open →')).join('')}</div>
     <div class="sec-head"><h2>Calculators</h2></div><div class="grid auto">${CALCS.filter(c => c.disc === 'maths').map(calcTile).join('')}</div>
+    <div class="sec-head"><h2>Topic guides</h2><a class="btn ghost sm" href="#/topics">All topic guides →</a></div><div class="grid auto">${TOPICS.filter(t => t.sec === 'maths').slice(0, 8).map(t => linkTile(`#/topic/${t.id}`, t.group, t.title, t.summary.split('. ')[0] + '.', 'Read →')).join('')}</div>
     <div class="sec-head"><h2>Topic map</h2></div>${taxGroups(MATHS.groups)}`;
 }
 

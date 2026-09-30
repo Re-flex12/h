@@ -27,7 +27,7 @@ const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium
 
 export function page(main, _, query) {
   const tab = query.get('t') || 'projects';
-  main.innerHTML = `${crumbs([['Workspace']])}${pageHead('08 / WSP', 'My Workspace', 'Projects, saved calculations, history and preferences. Everything is stored in this browser — export a backup to move it between devices. (Accounts and sync are on the roadmap.)')}
+  main.innerHTML = `${crumbs([['Workspace']])}${pageHead('08 / WSP', 'My Workspace', 'Projects, saved calculations, history and preferences. Everything is stored in this browser — export a backup to move it between devices. (Accounts and sync are coming.)')}
     <div class="tabs" style="margin-top:0">${[['projects', 'Projects'], ['history', 'History'], ['saved', 'Saved items'], ['settings', 'Settings & data']].map(([k, n]) => `<button data-t="${k}" class="${k === tab ? 'on' : ''}">${n}</button>`).join('')}</div><div id="wp" class="mt"></div>`;
   const pane = main.querySelector('#wp');
   const show = t => { main.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); ({ projects, history: hist, saved, settings: prefs })[t](pane); };
@@ -88,7 +88,7 @@ function prefs(pane) {
       <p class="small muted">Individual units can still be changed on every input and result.</p></div>
     <div class="panel"><h4>Backup & transfer</h4><p class="small muted mt">Export all projects, history and saved items as JSON, and import them on another device or browser.</p>
       <div class="btns"><button class="btn sm" id="ex">Export all data</button><label class="btn ghost sm">Import…<input type="file" id="im" accept=".json,application/json" hidden></label></div>
-      <div class="msg info mt">Accounts with cross-device sync and team projects need a server and are not part of this static build. Use export/import (or a share link) to move projects between people and devices. Scripting: see the <a href="#/reference/api">JavaScript API</a>.</div></div></div>`;
+      <div class="msg info mt">Coming soon: accounts with cross-device sync and team projects (server-backed). Until then, use export/import (or a share link) to move projects between people and devices. Scripting: see the <a href="#/reference/api">JavaScript API</a>.</div></div></div>`;
   const sync = () => { document.getElementById('levelSel').value = settings.level; document.getElementById('unitSel').value = settings.units; document.documentElement.dataset.theme = settings.theme; };
   pane.querySelector('#pl').onchange = e => { setSetting('level', e.target.value); sync(); toast('Level updated'); };
   pane.querySelector('#pu').onchange = e => { setSetting('units', e.target.value); sync(); toast('Units updated'); };

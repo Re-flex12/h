@@ -2,6 +2,8 @@ import { esc, T } from '../core/format.js';
 import { CALC, DISCIPLINES } from '../calcs/index.js';
 import { EQ } from '../data/equations.js';
 import { LESSON } from '../data/lessons.js';
+import { TOPIC } from '../data/topics.js';
+import { LAB } from '../data/labs.js';
 
 export const SIMS = {
   projectile: { title: 'Projectile Motion', sec: 'physics', d: 'Launch, drag the angle and speed, compare with and without air drag.' },
@@ -60,6 +62,8 @@ export function href(kind, id) {
     case 'tool': return toolHref(id);
     case 'material': return `#/reference/materials/${id}`;
     case 'disc': return `#/engineering/${id}`;
+    case 'topic': return `#/topic/${id}`;
+    case 'lab': return `#/learn/labs/${id}`;
   }
   return '#/';
 }
@@ -70,6 +74,8 @@ export function titleOf(kind, id) {
     case 'sim': return SIMS[id]?.title;
     case 'solver': return SOLVERS[id]?.title;
     case 'eq': return EQ[id]?.name;
+    case 'topic': return TOPIC[id]?.title;
+    case 'lab': return LAB[id]?.title;
   }
   return id;
 }

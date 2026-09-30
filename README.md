@@ -19,13 +19,14 @@ npm install && npm run build   # → dist/physeng.html — the whole site in ONE
 | **Calculators** | 168 calculators across mechanics, mechanical design, structural (incl. EN 1993 steel beam/column checks, EN 1992 RC beams, EN 1990 load combinations), fluids, thermodynamics, steam, HVAC & refrigeration, electrical, manufacturing, energy, controls, signals, chemical, civil/geotechnical, materials, robotics, vibrations, maths & statistics, waves/optics, nuclear, **quantum** and **relativity/cosmology**. Each has basic/advanced modes, per-field units (SI / metric-engineering / imperial), material/fluid/gas pickers, stated equations, assumptions, limitations, sources, pass/fail checks, a share link, save-to-project (with versioning) and a printable calculation sheet. |
 | **Solvers** | Beam (any supports and loads, indeterminate), truss (direct stiffness), circuit (DC + AC phasor MNA, frequency sweep), pipe network (loops, pumps, Colebrook), drive train (gears, belts, chains, worms, planetaries), thermodynamic cycles (Otto, Diesel, Dual, Brayton, Carnot, Stirling), MDOF vibration (modes + FRF), heat exchangers (ε-NTU/LMTD) and PID. |
 | **Simulations** | 26: projectile, pendulum, collisions, waves, optics, electric fields, magnetic fields of currents, RLC phasors, Kepler orbits, heat conduction, tensile test, flow past a cylinder (Magnus), gear train, Doppler/Mach cone, double slit, wavefunctions, tunnelling wave packet, hydrogen orbitals, Stern–Gerlach, Minkowski diagram, light clock, black-hole orbits, accretion disk, gravitational lensing, gravitational waves and the expanding universe. |
-| **Quantum & Relativity** | A separate top-level section with its own calculators, lessons, simulations, a quantum-circuit simulator and topic map (QM, atomic, quantum information, SR, GR, black holes, gravitational waves, cosmology, particle physics, QFT). |
+| **Quantum & Relativity** | A separate top-level section with its own calculators, lessons, simulations, a quantum-circuit simulator and topic map (QM, atomic, quantum information, SR, GR, black holes, gravitational waves, cosmology, particle physics). |
 | **Reference** | Equation library (113 equations, each solvable for any variable); CODATA constants; 58-material database with a comparison/Ashby view; fluid and gas tables; **full IAPWS-IF97 steam tables** (Regions 1–5, T–s / Mollier / p–h charts); **refrigerant tables** for 11 refrigerants (from reference equations of state); **IPE/HEA/HEB steel sections**; ISO threads, bolt classes, NPS pipe, K-factors; a standards guide; and the JavaScript API. |
 | **Tools** | Unit converter, equation solver, graphing, CSV data analysis/regression, uncertainty propagation (GUM + Monte Carlo), dimensional analysis, FFT, matrix calculator, numerical methods, psychrometric chart, quantum circuits, and "Ask" (plain-English questions routed to the right calculator). |
-| **Learn** | 23 lessons (depth adapts to School / University / Professional), 12 **lab guides** with a live data table, least-squares fit and uncertainty, 6 timed **exam-style papers** (GCSE, A-level, IB, university) with mark schemes, a question bank, formula drills, timed quizzes, flashcards and progress tracking. |
+| **Learn** | 23 lessons, 61 topic guides (depth adapts to School / University / Professional), 12 **lab guides** with a live data table, least-squares fit and uncertainty, 6 timed **exam-style papers** (GCSE, A-level, IB, university) with mark schemes, a question bank, formula drills, timed quizzes, flashcards and progress tracking. |
 | **Workspace** | Projects, calculation history with **revisions and diffs**, favourites, notes, project summaries, JSON import/export (stored in the browser). |
 | **Search** | Global search (`/` or Ctrl+K). It also recognises typed equations such as `E=mc2`, `PV=nRT` or `FL^3/48EI`. |
-| **Content map** | All 1,085 topics from the full site spec; 639 link to a live tool, and the rest are marked as planned. |
+| **Topic guides** | 61 explainers for core physics (motion, forces, rotation, gravity, electricity, magnetism, waves, thermal, nuclear) and maths (arithmetic to vector calculus, Laplace transforms and hypothesis testing), each with key equations, a worked example, a self-check and linked tools. |
+| **Content map** | 706 topics; every one links to a live lesson, topic guide, calculator, simulation, solver or reference page. |
 
 ## Reliability
 
@@ -52,6 +53,6 @@ scripts/build-single.mjs   single-file build
 tests/                     node:test suites
 ```
 
-## Not included
+## Coming next
 
-Accounts, cross-device sync and team projects need a server, so this static build doesn't have them. Projects move between people and devices through JSON export/import or share links.
+Accounts, cross-device sync and team projects (server-backed). Until then, projects move between people and devices through JSON export/import or share links.

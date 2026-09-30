@@ -11,6 +11,7 @@ import * as solvers2 from './pages/solvers2.js';
 import * as sims from './pages/sims.js';
 import * as learn from './pages/learn.js';
 import * as labs from './pages/labs.js';
+import * as topics from './pages/topics.js';
 import * as ws from './pages/workspace.js';
 import * as tools2 from './pages/tools2.js';
 import * as practice from './pages/practice.js';
@@ -19,7 +20,7 @@ window.PHYSENG = PHYSENG;
 
 const ROUTES = [
   [/^$/, sections.home, ''],
-  [/^learn$/, learn.index, 'learn'], [/^learn\/practice$/, practice.page, 'learn'], [/^learn\/labs$/, labs.index, 'learn'], [/^learn\/labs\/([\w-]+)$/, labs.lab, 'learn'], [/^learn\/([\w-]+)$/, learn.lesson, 'learn'],
+  [/^learn$/, learn.index, 'learn'], [/^topics$/, topics.index, 'learn'], [/^topic\/([\w-]+)$/, topics.topic, 'learn'], [/^learn\/practice$/, practice.page, 'learn'], [/^learn\/labs$/, labs.index, 'learn'], [/^learn\/labs\/([\w-]+)$/, labs.lab, 'learn'], [/^learn\/([\w-]+)$/, learn.lesson, 'learn'],
   [/^physics$/, sections.physics, 'physics'],
   [/^quantum$/, sections.quantum, 'quantum'], [/^quantum\/circuit$/, tools2.quantumCircuit, 'quantum'],
   [/^engineering$/, sections.engineering, 'engineering'], [/^engineering\/([\w-]+)$/, sections.discipline, 'engineering'],
