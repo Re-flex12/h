@@ -1,10 +1,12 @@
-import { settings, setSetting, getHistory, clearHistory, getProjects, createProject, deleteProject, updateProject, removeFromProject, restoreVersion, getFavs, toggleFav, exportAll, importAll } from '../core/store.js';
+import { settings, setSetting, getHistory, clearHistory, getProjects, createProject, deleteProject, updateProject, removeFromProject, restoreVersion, claimProjects, projectOwner, getFavs, toggleFav, exportAll, importAll } from '../core/store.js';
 import { CALC } from '../calcs/index.js';
 import { EQ } from '../data/equations.js';
 import { getMaterial } from '../data/materials.js';
 import { esc, toast, debounce } from '../core/format.js';
 import { crumbs, pageHead, LEVEL_NAME } from './common.js';
 import { encodeState } from './calc.js';
+import * as auth from '../core/auth.js';
+import { onSync, syncNow } from '../core/sync.js';
 
 const itemHref = it => {
   if (it.kind === 'calc') return `#/calc/${it.calc}?s=${encodeState({ v: it.inputs, u: it.units, m: it.mode })}`;
@@ -27,7 +29,7 @@ const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium
 
 export function page(main, _, query) {
   const tab = query.get('t') || 'projects';
-  main.innerHTML = `${crumbs([['Workspace']])}${pageHead('08 / WSP', 'My Workspace', 'Projects, saved calculations, history and preferences. Everything is stored in this browser — export a backup to move it between devices. (Accounts and sync are coming.)')}
+  main.innerHTML = `${crumbs([['Workspace']])}${pageHead('08 / WSP', 'My Workspace', 'Projects, saved calculations, history and preferences. Everything is stored in this browser — export a backup to move it between devices. Sign in to sync projects across devices.')}
     <div class="tabs" style="margin-top:0">${[['projects', 'Projects'], ['history', 'History'], ['saved', 'Saved items'], ['settings', 'Settings & data']].map(([k, n]) => `<button data-t="${k}" class="${k === tab ? 'on' : ''}">${n}</button>`).join('')}</div><div id="wp" class="mt"></div>`;
   const pane = main.querySelector('#wp');
   const show = t => { main.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); ({ projects, history: hist, saved, settings: prefs })[t](pane); };
@@ -35,21 +37,39 @@ export function page(main, _, query) {
   show(tab);
 }
 
+// Sync status line above the project list.
+function syncBar() {
+  if (!auth.configured()) return '';
+  const u = auth.getState().user;
+  if (!u) return `<div class="msg info mb">Projects are saved in this browser only. <a href="#/signin">Sign in</a> or <a href="#/signup">create an account</a> to sync them across devices.</div>`;
+  const local = getProjects().filter(p => !p.owner).length;
+  return `<div class="sync-bar mb"><span id="syncState" class="mono small"></span><button class="btn ghost sm" id="syncNow">Sync now</button>${local ? `<button class="btn sm" id="claimAll">Upload ${local} local project${local === 1 ? '' : 's'} to my account</button>` : ''}</div>`;
+}
+const SYNC_TXT = { off: '', pending: '● Changes waiting to sync…', syncing: '↻ Syncing…', synced: '✓ Synced', error: '⚠ Sync failed', offline: '⚠ Offline — will sync when you reconnect' };
+
 function projects(pane) {
   const ps = getProjects();
-  pane.innerHTML = `<div class="toolbar"><input class="filter-in" id="np" placeholder="New project name, e.g. “Formula Student suspension”"><button class="btn sm" id="npb">Create project</button></div>
+  const signedIn = Boolean(auth.getState().user);
+  pane.innerHTML = `${syncBar()}<div class="toolbar"><input class="filter-in" id="np" placeholder="New project name, e.g. “Formula Student suspension”"><button class="btn sm" id="npb">Create project</button></div>
     ${ps.length ? ps.map(p => `<div class="panel tick mb" data-p="${p.id}">
-      <div class="panel-title"><div><input class="plain" data-name value="${esc(p.name)}" style="font-weight:700;font-size:18px;border-color:transparent;padding:4px 0;background:transparent"><div class="small muted mono">Created ${when(p.created)} · ${p.items.length} item${p.items.length === 1 ? '' : 's'}</div></div>
-      <div class="btns"><button class="btn ghost sm" data-exp>Export JSON</button><button class="btn ghost sm" data-print>Project summary</button><button class="btn danger sm" data-del>Delete</button></div></div>
+      <div class="panel-title"><div><input class="plain" data-name value="${esc(p.name)}" style="font-weight:700;font-size:18px;border-color:transparent;padding:4px 0;background:transparent"><div class="small muted mono">Created ${when(p.created)} · ${p.items.length} item${p.items.length === 1 ? '' : 's'}${auth.configured() && signedIn ? (p.owner ? ' · <span class="ok">☁ synced to account</span>' : ' · <span class="muted">this browser only</span>') : ''}</div></div>
+      <div class="btns">${signedIn && !p.owner ? '<button class="btn sm" data-claim>Upload to account</button>' : ''}<button class="btn ghost sm" data-exp>Export JSON</button><button class="btn ghost sm" data-print>Project summary</button><button class="btn danger sm" data-del>Delete</button></div></div>
       ${p.items.length ? `<div class="rows">${p.items.map((it, i) => `<div class="row"><span class="ri">${String(i + 1).padStart(2, '0')}</span><span><a href="${itemHref(it)}" class="rt" style="text-decoration:none">${esc(it.title)}</a>${it.rev > 1 ? ` <span class="badge">rev ${it.rev}</span>` : ''}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}<div class="small muted">${esc(it.result || '')}</div>${versionsHtml(it)}</span><span class="rd">${when(it.at)} <button class="btn ghost sm" data-rm="${it.id}">✕</button></span></div>`).join('')}</div>` : '<div class="empty">No items yet — open any calculator or solver and press “Save to project”.</div>'}
       <div class="field mt"><label>Project notes</label><textarea class="plain" data-notes style="min-height:80px" placeholder="Requirements, decisions, open questions…">${esc(p.notes || '')}</textarea></div>
     </div>`).join('') : '<div class="empty">No projects yet. Create one above — e.g. a Formula Student suspension, a pump system or a lab report.</div>'}`;
+  const st = pane.querySelector('#syncState');
+  if (st) {
+    const off = onSync(s => { if (!st.isConnected) { off(); return; } st.textContent = SYNC_TXT[s.state] + (s.state === 'synced' && s.at ? ` · ${new Date(s.at).toLocaleTimeString()}` : '') + (s.state === 'error' && s.error ? ` — ${s.error}` : ''); st.className = `mono small ${s.state === 'error' || s.state === 'offline' ? 'no' : s.state === 'synced' ? 'ok' : 'muted'}`; });
+    pane.querySelector('#syncNow').onclick = () => syncNow();
+    pane.querySelector('#claimAll')?.addEventListener('click', () => { const n = claimProjects(); toast(`${n} project${n === 1 ? '' : 's'} added to your account`); projects(pane); });
+  }
   pane.querySelector('#npb').onclick = () => { const n = pane.querySelector('#np').value.trim(); if (!n) return; createProject(n); projects(pane); toast('Project created'); };
   pane.querySelectorAll('[data-p]').forEach(el => {
     const id = el.dataset.p, p = getProjects().find(x => x.id === id);
     el.querySelector('[data-name]').oninput = debounce(e => updateProject(id, { name: e.target.value }), 400);
     el.querySelector('[data-notes]').oninput = debounce(e => updateProject(id, { notes: e.target.value }), 400);
-    el.querySelector('[data-del]').onclick = () => { if (confirm(`Delete project “${p.name}”? This cannot be undone.`)) { deleteProject(id); projects(pane); } };
+    el.querySelector('[data-del]').onclick = () => { if (confirm(`Delete project “${p.name}”${p.owner ? ' from all your devices' : ''}? This cannot be undone.`)) { deleteProject(id); projects(pane); } };
+    el.querySelector('[data-claim]')?.addEventListener('click', () => { claimProjects([id]); toast('Project added to your account'); projects(pane); });
     el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { removeFromProject(id, b.dataset.rm); projects(pane); });
     el.querySelectorAll('[data-restore]').forEach(b => b.onclick = () => { const [iid, j] = b.dataset.restore.split(':'); restoreVersion(id, iid, +j); projects(pane); toast('Earlier revision restored as a new revision'); });
     el.querySelector('[data-exp]').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' })); a.download = `${p.name.replace(/[^\w-]+/g, '_')}.physeng.json`; a.click(); };
@@ -88,7 +108,7 @@ function prefs(pane) {
       <p class="small muted">Individual units can still be changed on every input and result.</p></div>
     <div class="panel"><h4>Backup & transfer</h4><p class="small muted mt">Export all projects, history and saved items as JSON, and import them on another device or browser.</p>
       <div class="btns"><button class="btn sm" id="ex">Export all data</button><label class="btn ghost sm">Import…<input type="file" id="im" accept=".json,application/json" hidden></label></div>
-      <div class="msg info mt">Coming soon: accounts with cross-device sync and team projects (server-backed). Until then, use export/import (or a share link) to move projects between people and devices. Scripting: see the <a href="#/reference/api">JavaScript API</a>.</div></div></div>`;
+      <div class="msg info mt">Signed-in users' projects sync across devices automatically. Team projects are coming; until then, use export/import (or a share link) to share projects with other people. Scripting: see the <a href="#/reference/api">JavaScript API</a>.</div></div></div>`;
   const sync = () => { document.getElementById('levelSel').value = settings.level; document.getElementById('unitSel').value = settings.units; document.documentElement.dataset.theme = settings.theme; };
   pane.querySelector('#pl').onchange = e => { setSetting('level', e.target.value); sync(); toast('Level updated'); };
   pane.querySelector('#pu').onchange = e => { setSetting('units', e.target.value); sync(); toast('Units updated'); };

@@ -93,3 +93,56 @@ $$;
 
 revoke all on function public.delete_user() from public, anon;
 grant execute on function public.delete_user() to authenticated;
+
+-- 4. Project sync ---------------------------------------------------------------------------
+-- One row per project per user. `updated_at` is the client's last-modified time (last write wins);
+-- `deleted` rows are tombstones so deletions reach other devices.
+create table if not exists public.projects (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  id                 text not null check (char_length(id) between 1 and 64),
+  data               jsonb not null default '{}'::jsonb,
+  updated_at         timestamptz not null,
+  deleted            boolean not null default false,
+  server_updated_at  timestamptz not null default now(),
+  primary key (user_id, id),
+  constraint projects_size check (pg_column_size(data) <= 1048576)   -- 1 MB per project
+);
+
+create index if not exists projects_user_updated on public.projects (user_id, server_updated_at);
+
+alter table public.projects enable row level security;
+
+drop policy if exists "projects: own rows" on public.projects;
+create policy "projects: own rows" on public.projects
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Ignore writes older than what is stored (a stale device cannot overwrite a newer edit), stamp the
+-- server time, and cap the number of projects per user.
+create or replace function public.projects_guard()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if tg_op = 'UPDATE' then
+    if new.updated_at < old.updated_at then
+      return old;                          -- keep the newer stored version
+    end if;
+    new.user_id := old.user_id;            -- rows cannot be moved to another user
+  elsif (select count(*) from public.projects where user_id = new.user_id) >= 1000 then
+    raise exception 'Project limit reached (1000 per account)';
+  end if;
+  if new.updated_at > now() + interval '1 day' then
+    new.updated_at := now();               -- clamp clocks that are far in the future
+  end if;
+  new.server_updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists projects_guard on public.projects;
+create trigger projects_guard
+  before insert or update on public.projects
+  for each row execute function public.projects_guard();
+
+grant select, insert, update, delete on public.projects to authenticated;

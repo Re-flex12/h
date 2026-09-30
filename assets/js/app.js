@@ -18,6 +18,8 @@ import * as practice from './pages/practice.js';
 import * as account from './pages/account.js';
 import * as legal from './pages/legal.js';
 import * as auth from './core/auth.js';
+import { initSync } from './core/sync.js';
+import { onProjectsChanged } from './core/store.js';
 import { PHYSENG } from './api.js';
 window.PHYSENG = PHYSENG;
 
@@ -116,6 +118,14 @@ function initAccount() {
   auth.onAuth(paint);
   let prev = null;
   auth.onAuth(st => { const id = st.user?.id || null; if (st.ready && id !== prev) { const was = prev; prev = id; if (was !== null || id !== null) { const p = location.hash; if (/^#\/(account|signin|signup|reset-password)/.test(p)) route(); } } });
+  // Project sync: start it, and redraw the workspace when synced data arrives or the owner changes.
+  if (auth.configured()) {
+    initSync();
+    const redrawIfWorkspace = () => { if (/^#\/workspace/.test(location.hash) && !document.activeElement?.matches('input, textarea')) route(); };
+    onProjectsChanged(src => { if (src === 'sync' || src === 'signout') redrawIfWorkspace(); });
+    let owner;
+    auth.onAuth(st => { if (st.ready && (st.user?.id || null) !== owner) { owner = st.user?.id || null; redrawIfWorkspace(); } });
+  }
   // The Supabase script loads with `defer`; start once it is present.
   (function wait(n = 0) { if (window.supabase || !auth.configured() || n > 50) auth.initAuth(); else setTimeout(() => wait(n + 1), 100); })();
 }

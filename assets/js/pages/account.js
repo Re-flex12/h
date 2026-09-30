@@ -3,6 +3,8 @@ import * as auth from '../core/auth.js';
 import { TERMS_VERSION } from '../config.js';
 import { esc, toast } from '../core/format.js';
 import { crumbs, pageHead } from './common.js';
+import { onSync, syncNow } from '../core/sync.js';
+import { getProjects } from '../core/store.js';
 
 const q = (main) => new URLSearchParams(location.hash.split('?')[1] || '');
 const field = (id, label, type = 'text', extra = '') => `<div class="field"><label for="${id}"><span>${label}</span></label><div class="in"><input id="${id}" type="${type}" ${extra}></div></div>`;
@@ -133,12 +135,16 @@ export function account(main) {
       <div class="panel"><h4>Agreements</h4>
         <p class="small">Terms of Service and Privacy Policy version <b>${esc(md.terms_version || '—')}</b>, accepted ${esc(accepted)}. ${auth.termsCurrent(u) ? '<span class="ok">✓ current</span>' : `<span class="no">An updated version (${esc(TERMS_VERSION)}) needs your acceptance.</span> <button class="btn sm" id="accept">Review & accept</button>`}</p>
         <p class="small"><a href="#/terms">Terms of Service</a> · <a href="#/privacy">Privacy Policy</a></p>
+        <h4 class="mt2">Project sync</h4><p class="small"><span id="accSync" class="mono"></span></p><p class="small muted">${getProjects().filter(p => p.owner === u.id).length} project(s) synced to this account${getProjects().some(p => !p.owner) ? ` · ${getProjects().filter(p => !p.owner).length} only in this browser — upload them from <a href="#/workspace">Workspace</a>` : ''}.</p><button class="btn ghost sm" id="syncGo">Sync now</button>
         <h4 class="mt2">Session</h4><p class="small muted">Signed in since ${esc(new Date(u.last_sign_in_at || Date.now()).toLocaleString())}.</p>
         <button class="btn ghost sm" id="out">Sign out</button>
         <h4 class="mt2">Delete account</h4><p class="small muted">Permanently deletes your account and profile. Work saved in this browser is not affected.</p>
         <button class="btn danger sm" id="del">Delete my account</button>
       </div>
     </div>`;
+  const accSync = main.querySelector('#accSync');
+  const offSync = onSync(s => { if (!accSync.isConnected) { offSync(); return; } accSync.textContent = { off: '—', pending: 'Changes waiting…', syncing: 'Syncing…', synced: `✓ Synced ${s.at ? new Date(s.at).toLocaleTimeString() : ''}`, error: `⚠ ${s.error || 'Sync failed'}`, offline: '⚠ Offline' }[s.state] || s.state; });
+  main.querySelector('#syncGo').onclick = () => syncNow();
   main.querySelector('#pf').onsubmit = async (e) => { e.preventDefault(); try { await auth.updateProfile({ display_name: main.querySelector('#name').value.trim(), role: main.querySelector('#role').value }); toast('Profile saved'); } catch (x) { msg(main, 'warn', esc(x.message)); } };
   main.querySelector('#pwf').onsubmit = async (e) => { e.preventDefault(); try { await auth.updatePassword(main.querySelector('#pw').value); main.querySelector('#pw').value = ''; toast('Password changed'); } catch (x) { msg(main, 'warn', esc(x.message)); } };
   main.querySelector('#out').onclick = async () => { await auth.signOut().catch(() => {}); toast('Signed out'); location.hash = '#/'; };

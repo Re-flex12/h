@@ -9,7 +9,8 @@ Until `assets/js/config.js` is filled in, the site works as before, and the acco
    - `public.profiles` (display name, role, accepted Terms version and time), with Row Level Security so each user sees only their own row;
    - a trigger that **refuses any sign-up without Terms acceptance** and creates the profile;
    - a trigger that keeps the profile in step when the user renames themselves or re-accepts updated Terms;
-   - `public.delete_user()`, so users can delete their own account.
+   - `public.delete_user()`, so users can delete their own account;
+   - `public.projects` for **project sync**: one row per project, RLS-isolated per user, 1 MB/project and 1000 projects/account limits, and a trigger that ignores stale writes (a device with an older copy can't overwrite a newer edit).
 
 ## 2. Configure authentication
 **Authentication → URL Configuration**
@@ -45,6 +46,7 @@ Then run `npm run build` if you ship the single-file `dist/physeng.html`. Sign-i
 | Sign up | `auth.signUp` with Terms metadata → confirmation email → link returns to the site (`?code=…`, PKCE) → signed in → `#/account` |
 | Sign in / out | `signInWithPassword` / `signOut`; the session is kept in localStorage and refreshed automatically |
 | Forgot password | `resetPasswordForEmail` → link returns with `?reset=1&code=…` → `#/reset-password` → `updateUser({ password })` |
+| Project sync | On sign-in, after each change (1.5 s debounce), on window focus or reconnect, and every minute: fetch row metadata → download newer server copies → upload newer local copies and deletion markers. Signing out flushes first, then removes that account's copies from the browser; if the flush failed, they're kept as local-only projects so nothing is lost. |
 | Account page | edit name and role, change password, view the accepted Terms version, sign out, delete account (`rpc('delete_user')`) |
 
 PKCE is used so that auth parameters arrive in the query string and never clash with the site's `#/` hash router.

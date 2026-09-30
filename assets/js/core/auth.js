@@ -67,7 +67,13 @@ export async function signUp({ email, password, name, role, acceptedTerms, ageOk
   return { needsConfirmation: !data.session, user: data.user };
 }
 export const signIn = ({ email, password }) => run(need().auth.signInWithPassword({ email, password }));
-export const signOut = () => run(need().auth.signOut());
+// Hooks run before sign-out (e.g. to flush unsynced projects). Failures never block signing out.
+const beforeSignOut = [];
+export const onBeforeSignOut = (fn) => beforeSignOut.push(fn);
+export async function signOut() {
+  for (const fn of beforeSignOut) { try { await fn(); } catch (e) { console.warn(e); } }
+  return run(need().auth.signOut());
+}
 export const sendReset = (email) => run(need().auth.resetPasswordForEmail(email, { redirectTo: returnUrl('?reset=1') }));
 export async function updatePassword(password) {
   const bad = validatePassword(password);
@@ -89,5 +95,5 @@ export async function acceptTerms() {
 // Deletes the signed-in user's account via the delete_user() database function (see supabase/schema.sql).
 export async function deleteAccount() {
   await run(need().rpc('delete_user'));
-  await client.auth.signOut().catch(() => {});
+  await client.auth.signOut().catch(() => {});   // skip the sync flush: the account and its projects are gone
 }
