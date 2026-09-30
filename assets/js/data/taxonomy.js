@@ -88,7 +88,7 @@ export const ENGINEERING = {
       g('FEA Fundamentals', 'FEM fundamentals>solver:beam|Nodes/elements|Meshing|Boundary conditions|Loads|Stiffness matrices>solver:truss|Linear static analysis>solver:truss|Modal analysis>solver:vibration|Thermal FEA|Convergence|Result interpretation'),
     ] },
     { id: 'structural', code: 'STR', name: 'Structural & Civil', calc: ['structural', 'civil'], groups: [
-      g('Structural', 'Beams>solver:beam|Trusses>solver:truss|Frames|Reactions>solver:beam|SFD/BMD>solver:beam|Deflection>calc:beam-cases|Columns>calc:buckling|Structural steel>tool:materials|Reinforced concrete|Loads|Load combinations|Section properties>calc:section'),
+      g('Structural', 'Beams>solver:beam|Trusses>solver:truss|Frames|Reactions>solver:beam|SFD/BMD>solver:beam|Deflection>calc:beam-cases|Columns>calc:buckling|Structural steel>tool:sections|Reinforced concrete>calc:rc-beam|Loads>calc:load-comb|Load combinations>calc:load-comb|Section properties>calc:section'),
       g('Geotechnical', 'Soil properties>calc:effective-stress|Effective stress>calc:effective-stress|Consolidation>calc:consolidation|Shear strength|Bearing capacity>calc:bearing|Foundations>calc:bearing|Retaining walls>calc:earth-pressure|Slope stability'),
       g('Hydrology', 'Rainfall>calc:rational|Runoff>calc:rational|Drainage>calc:manning|Rational method>calc:rational|Hydrographs|Flood calculations|Open channels>calc:manning'),
       g('Surveying', 'Levelling|Coordinates|Bearings|Traverses|Areas/volumes'),
@@ -197,6 +197,7 @@ export const REFERENCE_LIST = [
   ['fluids', 'Fluid & Property Tables', 'Water, air, common liquids, gases and IAPWS-IF97 saturation.'],
   ['steam', 'Steam Tables (IAPWS-IF97)', 'Saturated, superheated, compressed and supercritical water with T–s, Mollier and p–h charts.'],
   ['refrigerants', 'Refrigerant Tables', 'P–T saturation tables, p–h diagrams, GWP and safety class for 11 refrigerants.'],
+  ['sections', 'Steel Sections', 'IPE, HEA and HEB section dimensions and properties (A, I, W_el, W_pl, I_t, I_w).'],
   ['tables', 'Engineering Tables', 'ISO metric threads, bolt classes, NPS pipe sizes, roughness, K-factors.'],
   ['standards', 'Standards Guide', 'What ISO, ASME, ASTM, IEC, EN and others cover — and which calculators relate.'],
   ['api', 'JavaScript API', 'Call any calculator, solver, equation or unit conversion from code via window.PHYSENG.'],

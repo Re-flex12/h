@@ -4,6 +4,7 @@ import { MATERIALS, PROPS, DERIVED, getMaterial } from '../data/materials.js';
 import { WATER_TABLE, AIR_TABLE, FLUIDS, GASES, ROUGHNESS, psatIF97 } from '../data/fluids.js';
 import { steamPT, satP, satT, dome, steamPS } from '../data/if97.js';
 import { REFRIGERANTS, REFRIGERANT_LIST, SUP_DT } from '../data/refrigerants.js';
+import { SECTIONS } from '../data/sections.js';
 import { THREADS, BOLT_CLASSES, PIPES, KFACTORS, STANDARDS } from '../data/reference.js';
 import { CALC, CALCS, DISCIPLINES } from '../calcs/index.js';
 import { LESSON } from '../data/lessons.js';
@@ -297,6 +298,19 @@ export function refrigerants(main) {
   };
   main.querySelector('#rf').onchange = draw;
   draw();
+}
+
+// ── Steel sections ──────────────────────────────────────────────
+export function sections(main) {
+  const fams = ['IPE', 'HEA', 'HEB'];
+  main.innerHTML = `${crumbs([['Reference', '#/reference'], ['Steel sections']])}${pageHead('07 / REF / SEC', 'Steel Sections — IPE, HEA, HEB', 'European hot-rolled I and H sections (EN 10365 dimensions). Properties are computed from nominal dimensions including root fillets and agree with manufacturer tables to within 0.1 %.')}
+    <div class="row gap" style="flex-wrap:wrap;align-items:center"><div class="chips" id="fam">${fams.map((f, i) => `<button class="chip${i ? '' : ' on'}" data-f="${f}">${f}</button>`).join('')}</div><a class="btn sm" href="#/calc/steel-beam">Beam check (EC3) →</a><a class="btn ghost sm" href="#/calc/steel-column">Column check →</a><a class="btn ghost sm" href="#/calc/section">Other shapes →</a></div>
+    <div id="secT" class="mt"></div>
+    <p class="small muted">y–y is the major axis. A_vz is the EN 1993-1-1 shear area (η = 1). Mass for ρ = 7850 kg/m³. Always confirm against the current manufacturer catalogue for tolerances and availability.</p>`;
+  const cols = [['h', 'h mm', 1e3, 0], ['b', 'b mm', 1e3, 0], ['tw', 't_w mm', 1e3, 1], ['tf', 't_f mm', 1e3, 1], ['r', 'r mm', 1e3, 0], ['mass', 'kg/m', 1, 1], ['A', 'A cm²', 1e4, 2], ['Iy', 'I_y cm⁴', 1e8, 0], ['Wely', 'W_el,y cm³', 1e6, 1], ['Wply', 'W_pl,y cm³', 1e6, 1], ['iy', 'i_y cm', 1e2, 2], ['Avz', 'A_vz cm²', 1e4, 2], ['Iz', 'I_z cm⁴', 1e8, 1], ['Wplz', 'W_pl,z cm³', 1e6, 1], ['iz', 'i_z cm', 1e2, 2], ['It', 'I_t cm⁴', 1e8, 2], ['Iw', 'I_w ×10³ cm⁶', 1e9, 2]];
+  const draw = f => { main.querySelector('#secT').innerHTML = `<div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Section</th>${cols.map(c => `<th class="num">${c[1]}</th>`).join('')}</tr></thead><tbody>${SECTIONS.filter(s => s.fam === f).map(s => `<tr><td><b>${s.name}</b></td>${cols.map(([k, , m, d]) => `<td class="num">${(s[k] * m).toFixed(d)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
+  main.querySelectorAll('#fam .chip').forEach(b => b.onclick = () => { main.querySelectorAll('#fam .chip').forEach(x => x.classList.toggle('on', x === b)); draw(b.dataset.f); });
+  draw('IPE');
 }
 
 export function tables(main) {

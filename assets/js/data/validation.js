@@ -72,4 +72,8 @@ export const VALIDATION = {
     { inputs: { ref: 'R717', Te: 243.15, Tc: 308.15, sh: 5, sc: 3, etaC: 0.7 }, expect: { COP: [1.98776, 2e-3], T2: [273.15 + 222.138, 5e-4] }, source: 'CoolProp 8: NH₃ −30/35 °C, η_is = 0.7 → COP 1.988, discharge 222 °C' },
   ],
   'refrigerant-props': [{ inputs: { ref: 'R134a', mode: 'T', T: 263.15 }, expect: { pd: [200.6e3, 2e-3] }, source: 'ASHRAE Fundamentals ch. 30: R-134a p_sat(−10 °C) = 200.6 kPa' }],
+  'steel-beam': [{ inputs: { sec: 'IPE300', grade: '275', L: 6, wU: 20e3, wS: 10e3, restraint: 'none', sw: 'no', C1: 1.127 }, expect: { McRd: [628.4e-6 * 275e6, 1e-3], Mcr: [101.97e3, 3e-3], MEd: [90e3, 1e-9] }, source: 'IPE 300 S275: W_pl,y = 628.4 cm³ (ArcelorMittal) → M_c,Rd = 172.8 kN·m; M_cr = 102.0 kN·m by NCCI SN003 with C₁ = 1.127, L = 6 m' }],
+  'steel-column': [{ inputs: { sec: 'HEB200', grade: '355', Ly: 4, Lz: 4, NEd: 1e6 }, expect: { Npl: [78.08e-4 * 355e6, 1e-3] }, source: 'HEB 200: A = 78.08 cm² (ArcelorMittal) → N_pl = 2772 kN in S355' }],
+  'rc-beam': [{ inputs: { b: 0.3, h: 0.55, cov: 0.05, M: 250e3, fck: '30', fyk: 500e6 }, expect: { K: [0.1111, 1e-3], z: [0.4449, 1e-3], As: [1292e-6, 2e-3] }, source: 'Hand calculation to EN 1992-1-1 (Concrete Centre method): b = 300, d = 500, M = 250 kN·m, C30/37 → A_s = 1292 mm²' }],
+  'load-comb': [{ inputs: { Gk: 4e3, Q1: 2.5e3, c1: 'B', Q2: 0.6e3, c2: 'S', fav: 'unfav' }, expect: { e610: [9.6e3, 1e-9], e610a: [8.475e3, 1e-9], e610b: [8.79e3, 1e-9], qp: [4.75e3, 1e-9] }, source: 'EN 1990 Eq. 6.10/6.10a/6.10b by hand with Table A1.1 ψ values' }],
 };
